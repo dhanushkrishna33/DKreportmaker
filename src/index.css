@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Base Reset & Variables */
+:root {
+  --font-serif: 'Times New Roman', 'Lora', Georgia, serif;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'Source Code Pro', Consolas, monospace;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: #020617;
+  color: #f8fafc;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Academic Report Paper Styling */
+.report-page {
+  font-family: var(--font-serif);
+  line-height: 1.6;
+}
+
+.report-page h1,
+.report-page h2,
+.report-page h3 {
+  font-family: var(--font-serif);
+}
+
+/* Printing Optimization */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 20mm 15mm 20mm 20mm;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .report-page {
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    min-height: auto !important;
+    page-break-after: always;
+    break-after: page;
+  }
+
+  .page-break {
+    page-break-before: always !important;
+    break-before: page !important;
+  }
+
+  table {
+    page-break-inside: avoid;
+  }
+
+  tr, img, svg {
+    page-break-inside: avoid;
+  }
+}
