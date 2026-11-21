@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { GeneratedReport } from '../types';
 import { COLLEGE_LOGO_BASE64, REPORT_FIGURES } from '../assets/reportImages';
 import { exportReportToWord } from '../utils/docxExport';
-import { Printer, Download, Copy, Check, Award, Layers } from 'lucide-react';
+import { Printer, Download, Copy, Check } from 'lucide-react';
 
 interface ReportPreviewProps {
   report: GeneratedReport;
@@ -12,13 +12,19 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ report }) => {
   const { formData, abstract, acknowledgement, declaration, certificateText, chapters, listOfFigures, listOfTables } = report;
   const [activeTab, setActiveTab] = useState<'all' | 'prelim' | 'chapters'>('all');
   const [copied, setCopied] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
   const handlePrint = () => {
     window.print();
   };
 
-  const handleExportWord = () => {
-    exportReportToWord(report);
+  const handleExportWord = async () => {
+    setIsExporting(true);
+    try {
+      await exportReportToWord(report);
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   const handleCopyText = () => {
@@ -27,7 +33,7 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ report }) => {
     fullText += `Guide: ${formData.guideName}\n\n`;
     fullText += `ABSTRACT:\n${abstract}\n\n`;
     chapters.forEach((c) => {
-      fullText += `\nCHAPTER ${c.id}: ${c.title}\n`;
+      fullText += `\n${c.id}. ${c.title}\n`;
       c.subsections.forEach((sub) => {
         fullText += `\n${sub.number} ${sub.title}\n`;
         fullText += sub.content.join('\n\n') + '\n';
@@ -60,7 +66,7 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ report }) => {
               activeTab === 'prelim' ? 'bg-blue-600 text-white shadow' : 'bg-slate-700/60 text-slate-300 hover:bg-slate-700'
             }`}
           >
-            Preliminary Pages (Cover, Cert, TOC)
+            Preliminary Pages (1 to 7)
           </button>
           <button
             type="button"
@@ -86,10 +92,11 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ report }) => {
           <button
             type="button"
             onClick={handleExportWord}
-            className="flex-1 md:flex-none flex items-center justify-center gap-1.5 bg-blue-700 hover:bg-blue-600 text-white text-xs font-semibold px-4 py-2 rounded-xl transition-colors shadow-md shadow-blue-900/30"
+            disabled={isExporting}
+            className="flex-1 md:flex-none flex items-center justify-center gap-1.5 bg-blue-700 hover:bg-blue-600 text-white text-xs font-semibold px-4 py-2 rounded-xl transition-colors shadow-md shadow-blue-900/30 disabled:opacity-50"
           >
             <Download className="w-4 h-4" />
-            <span>Download Word (.doc)</span>
+            <span>{isExporting ? 'Generating .docx...' : 'Download Word (.docx)'}</span>
           </button>
 
           <button
@@ -103,133 +110,133 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ report }) => {
         </div>
       </div>
 
-      {/* Printable Document Container */}
-      <div className="report-paper-container max-w-4xl mx-auto space-y-8 print:space-y-0 print:m-0 print:p-0 print:max-w-none">
+      {/* Strict A4 Document Paper Container */}
+      <div className="report-paper-container mx-auto flex flex-col items-center space-y-8 print:space-y-0 print:m-0 print:p-0">
         
         {/* =========================================================================
-            COVER PAGE (Exact ALIET Logo & Format)
+            PAGE 1: COVER PAGE (Strictly Centered Alignment & 1-inch margins)
            ========================================================================= */}
         {(activeTab === 'all' || activeTab === 'prelim') && (
-          <div className="report-page bg-white text-slate-900 p-12 sm:p-16 rounded-xl shadow-2xl border border-slate-200 print:border-none print:shadow-none print:p-0 print:m-0 flex flex-col justify-between min-h-[1050px] relative">
-            <div className="text-center space-y-4">
-              <h1 className="text-xl sm:text-2xl font-bold uppercase tracking-wide leading-snug font-serif text-slate-950">
+          <div className="a4-sheet bg-white text-black shadow-2xl border border-slate-200 print:border-none print:shadow-none flex flex-col justify-between">
+            <div className="text-center">
+              <h1 className="text-[15pt] font-bold uppercase tracking-wide leading-snug font-serif text-black mb-[5mm]">
                 {formData.projectName}
               </h1>
 
-              <p className="text-xs sm:text-sm text-slate-700 max-w-xl mx-auto font-serif">
+              <p className="text-[12pt] font-serif text-black leading-snug max-w-[155mm] mx-auto mb-[5mm]">
                 An Industrial Internship Report submitted in partial fulfillment of the academic requirements for the award of the degree of
               </p>
 
-              <div className="text-sm sm:text-base font-bold uppercase tracking-wider text-slate-900 font-serif leading-tight">
+              <div className="text-[12pt] font-bold uppercase tracking-wider text-black font-serif leading-tight mb-[4mm]">
                 BACHELOR OF TECHNOLOGY<br />
                 IN<br />
                 INFORMATION TECHNOLOGY
               </div>
 
-              <div className="pt-2 text-xs sm:text-sm font-serif">
-                <span className="font-semibold text-slate-600">BY</span>
-                <p className="font-bold text-sm sm:text-base text-slate-950 mt-1 uppercase">
-                  {formData.studentName} ({formData.rollNo})
-                </p>
+              <div className="text-[12pt] font-bold font-serif uppercase mb-[4mm]">
+                BY<br />
+                <span className="mt-1 block">{formData.studentName} ({formData.rollNo})</span>
               </div>
 
-              <div className="text-xs sm:text-sm font-serif">
-                <span className="font-semibold text-slate-600">Under the Guidance of</span>
-                <p className="font-bold text-sm sm:text-base text-slate-950 mt-1 uppercase">
-                  {formData.guideName}
+              <div className="text-[12pt] font-serif mb-[4mm]">
+                <span>Under the Guidance of</span><br />
+                <span className="font-bold uppercase text-[12pt] mt-1 block">{formData.guideName}</span>
+              </div>
+
+              {/* Exact Centered College Emblem */}
+              <div className="my-[4mm] flex justify-center">
+                <img
+                  src={COLLEGE_LOGO_BASE64}
+                  alt="ALIET Logo"
+                  className="w-[125px] h-[125px] object-contain"
+                />
+              </div>
+
+              {/* Exact College Details (Strictly Unchanged) */}
+              <div className="text-center font-serif text-[12pt] leading-tight space-y-1">
+                <p className="font-bold uppercase tracking-wider">
+                  DEPARTMENT OF INFORMATION TECHNOLOGY
+                </p>
+                <p className="font-bold uppercase">
+                  ANDHRA LOYOLA INSTITUTE OF ENGINEERING & TECHNOLOGY
+                </p>
+                <p className="font-bold">
+                  (Approved By AICTE, Affiliated to JNTUK)
+                </p>
+                <p className="font-bold">
+                  Vijayawada-520008
+                </p>
+                <p className="font-bold">
+                  {formData.academicYear || '2026-2027'}
+                </p>
+                <p className="font-bold uppercase pt-2">
+                  ANDHRA LOYOLA INSTITUTE OF ENGINEERING & TECHNOLOGY
+                </p>
+                <p className="text-[11pt]">
+                  (Approved By AICTE, Affiliated to JNTUK) Accredited by<br />
+                  NAAC at "A+" and NBA (ECE, EEE, CSE, IT)<br />
+                  An ISO 9001 : 2015 Certified Institution
                 </p>
               </div>
-            </div>
-
-            {/* Exact College Emblem Photo */}
-            <div className="my-5 flex justify-center">
-              <img
-                src={COLLEGE_LOGO_BASE64}
-                alt="Andhra Loyola Institute of Engineering and Technology Logo"
-                className="w-36 h-36 object-contain"
-              />
-            </div>
-
-            {/* Department & College Details (Strictly Unchanged) */}
-            <div className="text-center font-serif space-y-1 pb-2">
-              <p className="font-bold text-sm sm:text-base uppercase tracking-wider text-slate-950">
-                DEPARTMENT OF INFORMATION TECHNOLOGY
-              </p>
-              <p className="font-bold text-xs sm:text-sm uppercase text-slate-900">
-                ANDHRA LOYOLA INSTITUTE OF ENGINEERING & TECHNOLOGY
-              </p>
-              <p className="text-[11px] text-slate-700">
-                (Approved By AICTE, Affiliated to JNTUK)
-              </p>
-              <p className="text-xs font-semibold text-slate-800">
-                Vijayawada-520008
-              </p>
-              <p className="text-xs font-bold text-slate-900">
-                {formData.academicYear || '2026-2027'}
-              </p>
-              <p className="text-[11px] text-slate-700 pt-1">
-                ANDHRA LOYOLA INSTITUTE OF ENGINEERING & TECHNOLOGY<br />
-                (Approved By AICTE, Affiliated to JNTUK) Accredited by<br />
-                NAAC at "A+" and NBA (ECE, EEE, CSE, IT)<br />
-                An ISO 9001 : 2015 Certified Institution
-              </p>
             </div>
           </div>
         )}
 
         {/* =========================================================================
-            CERTIFICATE PAGE (Exact ALIET Logo & Signatures)
+            PAGE 2: CERTIFICATE PAGE (Exact Alignments: Header Center, Body Justified, Sigs Left/Right)
            ========================================================================= */}
         {(activeTab === 'all' || activeTab === 'prelim') && (
-          <div className="report-page bg-white text-slate-900 p-12 sm:p-16 rounded-xl shadow-2xl border border-slate-200 print:border-none print:shadow-none print:p-0 print:m-0 flex flex-col justify-between min-h-[1050px] relative page-break">
+          <div className="a4-sheet bg-white text-black shadow-2xl border border-slate-200 print:border-none print:shadow-none flex flex-col justify-between page-break">
             <div>
-              <div className="text-center space-y-2">
-                <p className="font-bold text-xs sm:text-sm uppercase text-slate-900 font-serif leading-tight">
-                  ANDHRA LOYOLA INSTITUTE OF ENGINEERING & TECHNOLOGY<br />
-                  <span className="text-[11px] font-normal text-slate-600">
-                    (Approved By AICTE, Affiliated to JNTUK) Accredited by<br />
-                    NAAC at "A+" and NBA (ECE, EEE, CSE, IT)<br />
-                    An ISO 9001 : 2015 Certified Institution
-                  </span>
+              <div className="text-center font-serif">
+                <p className="font-bold text-[12pt] uppercase leading-tight">
+                  ANDHRA LOYOLA INSTITUTE OF ENGINEERING & TECHNOLOGY
+                </p>
+                <p className="text-[11pt] leading-tight text-black mt-1">
+                  (Approved By AICTE, Affiliated to JNTUK) Accredited by<br />
+                  NAAC at "A+" and NBA (ECE, EEE, CSE, IT)<br />
+                  An ISO 9001 : 2015 Certified Institution
                 </p>
 
-                {/* College Emblem */}
-                <div className="my-3 flex justify-center">
+                {/* Centered College Logo */}
+                <div className="my-[4mm] flex justify-center">
                   <img
                     src={COLLEGE_LOGO_BASE64}
-                    alt="ALIET Emblem"
-                    className="w-24 h-24 object-contain"
+                    alt="ALIET Logo"
+                    className="w-[95px] h-[95px] object-contain"
                   />
                 </div>
 
-                <h2 className="text-lg font-bold uppercase tracking-widest text-slate-950 font-serif border-b-2 border-slate-900 pb-1 inline-block">
+                <h2 className="text-[14pt] font-bold uppercase tracking-widest text-black font-serif my-[4mm]">
                   CERTIFICATE
                 </h2>
               </div>
 
-              <div className="mt-8 text-justify font-serif text-sm leading-relaxed text-slate-800 indent-8">
+              {/* Justified Body Text */}
+              <p className="text-justify font-serif text-[12pt] leading-[1.5] indent-[24pt] text-black mt-[4mm]">
                 {certificateText}
-              </div>
+              </p>
             </div>
 
-            {/* Signature Blocks */}
-            <div className="mt-20 pt-8 font-serif">
-              <div className="grid grid-cols-2 gap-8 text-center text-xs sm:text-sm">
-                <div>
-                  <div className="h-14"></div>
-                  <p className="font-bold uppercase text-slate-950">{formData.guideName}</p>
-                  <p className="text-slate-600 text-xs">Internship Guide</p>
+            {/* Signature Blocks: Left = Guide, Right = HOD, Center = External Examiner */}
+            <div className="pt-[15mm] font-serif">
+              <div className="flex justify-between items-start text-[12pt] w-full">
+                <div className="text-left">
+                  <div className="h-[14mm]"></div>
+                  <p className="font-bold uppercase">{formData.guideName}</p>
+                  <p className="text-[11pt]">Internship Guide</p>
                 </div>
-                <div>
-                  <div className="h-14"></div>
-                  <p className="font-bold uppercase text-slate-950">{formData.hodName || 'Dr. M.CHINNARAO'}</p>
-                  <p className="text-slate-600 text-xs">Head Of The Department</p>
+
+                <div className="text-right">
+                  <div className="h-[14mm]"></div>
+                  <p className="font-bold uppercase">{formData.hodName || 'Dr. M.CHINNARAO'}</p>
+                  <p className="text-[11pt]">Head Of The Department</p>
                 </div>
               </div>
 
-              <div className="mt-16 text-center text-xs sm:text-sm">
-                <div className="h-10"></div>
-                <p className="font-bold uppercase text-slate-900 border-t border-slate-400 inline-block px-12 pt-1.5">
+              <div className="mt-[18mm] text-center text-[12pt]">
+                <div className="h-[10mm]"></div>
+                <p className="font-bold uppercase inline-block border-t border-black px-[12mm] pt-1">
                   EXTERNAL EXAMINER
                 </p>
               </div>
@@ -238,175 +245,189 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ report }) => {
         )}
 
         {/* =========================================================================
-            INTERNSHIP CERTIFICATE PAGE (Mandatory Uploaded Picture)
+            PAGE 3: INTERNSHIP CERTIFICATE PAGE (Mandatory Uploaded Image Centered)
            ========================================================================= */}
         {(activeTab === 'all' || activeTab === 'prelim') && (
-          <div className="report-page bg-white text-slate-900 p-8 sm:p-12 rounded-xl shadow-2xl border border-slate-200 print:border-none print:shadow-none print:p-0 print:m-0 flex flex-col justify-center items-center min-h-[1050px] relative page-break">
-            <h2 className="text-base sm:text-lg font-bold uppercase tracking-widest text-slate-950 font-serif mb-6 text-center">
+          <div className="a4-sheet bg-white text-black shadow-2xl border border-slate-200 print:border-none print:shadow-none flex flex-col justify-start items-center page-break">
+            <h2 className="text-[14pt] font-bold uppercase tracking-widest text-black font-serif mb-[6mm] text-center">
               INTERNSHIP CERTIFICATE
             </h2>
 
-            {formData.certificateImage ? (
-              <div className="w-full flex-1 flex items-center justify-center p-2">
-                <img
-                  src={formData.certificateImage}
-                  alt="Scanned Internship Certificate"
-                  className="max-w-full max-h-[820px] object-contain rounded border border-slate-300 shadow-md"
-                />
-              </div>
-            ) : (
-              <div className="w-full max-w-xl h-96 border-2 border-dashed border-slate-300 rounded-xl flex flex-col items-center justify-center p-8 text-center text-slate-400">
-                <Award className="w-12 h-12 text-slate-300 mb-3" />
-                <p className="font-serif text-sm font-semibold text-slate-600">
-                  [ Scanned internship certificate picture is mandatory ]
-                </p>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* =========================================================================
-            DECLARATION & ACKNOWLEDGEMENT
-           ========================================================================= */}
-        {(activeTab === 'all' || activeTab === 'prelim') && (
-          <div className="report-page bg-white text-slate-900 p-12 sm:p-16 rounded-xl shadow-2xl border border-slate-200 print:border-none print:shadow-none print:p-0 print:m-0 flex flex-col justify-between min-h-[1050px] relative page-break">
-            <div>
-              <h2 className="text-center text-base sm:text-lg font-bold uppercase tracking-widest text-slate-950 font-serif border-b border-slate-300 pb-2 mb-6">
-                DECLARATION
-              </h2>
-              <div className="text-justify font-serif text-sm leading-relaxed text-slate-800 space-y-4 indent-8">
-                {declaration.split('\n\n').map((p, i) => (
-                  <p key={i}>{p}</p>
-                ))}
-              </div>
-
-              <div className="mt-12 text-right font-serif text-sm">
-                <div className="h-10"></div>
-                <p className="font-bold text-slate-950 uppercase">{formData.studentName}</p>
-                <p className="text-slate-600 text-xs">({formData.rollNo})</p>
-              </div>
-
-              <div className="my-10 border-t border-slate-200"></div>
-
-              <h2 className="text-center text-base sm:text-lg font-bold uppercase tracking-widest text-slate-950 font-serif border-b border-slate-300 pb-2 mb-6">
-                ACKNOWLEDGEMENT
-              </h2>
-              <div className="text-justify font-serif text-sm leading-relaxed text-slate-800 space-y-3 indent-8">
-                {acknowledgement.split('\n\n').map((p, i) => (
-                  <p key={i}>{p}</p>
-                ))}
-              </div>
-            </div>
-
-            <div className="mt-8 text-right font-serif text-sm">
-              <div className="h-10"></div>
-              <p className="font-bold text-slate-950 uppercase">{formData.studentName}</p>
-              <p className="text-slate-600 text-xs">({formData.rollNo})</p>
+            <div className="w-full h-[220mm] flex items-center justify-center p-2">
+              <img
+                src={formData.certificateImage}
+                alt="Scanned Internship Certificate"
+                className="max-w-full max-h-full object-contain rounded border border-slate-300 shadow-sm"
+              />
             </div>
           </div>
         )}
 
         {/* =========================================================================
-            INDEX (TABLE OF CONTENTS)
+            PAGE 4: DECLARATION PAGE (Heading Center, Body Justified, Signature Right)
            ========================================================================= */}
         {(activeTab === 'all' || activeTab === 'prelim') && (
-          <div className="report-page bg-white text-slate-900 p-12 sm:p-16 rounded-xl shadow-2xl border border-slate-200 print:border-none print:shadow-none print:p-0 print:m-0 min-h-[1050px] relative page-break font-serif">
-            <h2 className="text-center text-lg font-bold uppercase tracking-widest text-slate-950 border-b-2 border-slate-900 pb-2 mb-8">
+          <div className="a4-sheet bg-white text-black shadow-2xl border border-slate-200 print:border-none print:shadow-none flex flex-col justify-start page-break font-serif">
+            <h2 className="text-center text-[14pt] font-bold uppercase tracking-widest text-black mb-[8mm]">
+              DECLARATION
+            </h2>
+
+            <div className="space-y-[5mm]">
+              <p className="text-justify text-[12pt] leading-[1.5] indent-[24pt] text-black">
+                I hereby declare that the project report entitled "{formData.projectName}" is the work done by me and submitted during the academic year {formData.academicYear || '2026-27'} in partial fulfillment of the requirements for the award of degree of Bachelor of Technology in Information Technology.
+              </p>
+              <p className="text-justify text-[12pt] leading-[1.5] indent-[24pt] text-black">
+                I further declare that this dissertation has not been submitted elsewhere for any degree.
+              </p>
+            </div>
+
+            {/* Signature Strictly Right Aligned */}
+            <div className="mt-[35mm] text-right font-serif">
+              <div className="h-[12mm]"></div>
+              <p className="font-bold text-[12pt] uppercase">{formData.studentName}</p>
+              <p className="font-bold text-[12pt]">({formData.rollNo})</p>
+            </div>
+          </div>
+        )}
+
+        {/* =========================================================================
+            PAGE 5: ACKNOWLEDGEMENT PAGE (Heading Center, Body Justified, Signature Right)
+           ========================================================================= */}
+        {(activeTab === 'all' || activeTab === 'prelim') && (
+          <div className="a4-sheet bg-white text-black shadow-2xl border border-slate-200 print:border-none print:shadow-none flex flex-col justify-start page-break font-serif">
+            <h2 className="text-center text-[14pt] font-bold uppercase tracking-widest text-black mb-[6mm]">
+              ACKNOWLEDGEMENT
+            </h2>
+
+            <div className="space-y-[4mm] text-justify text-[12pt] leading-[1.45] text-black">
+              <p className="indent-[24pt]">
+                The satisfaction that accompanies the successful completion of any task would be incomplete without mentioning the people who made it possible and whose constant guidance and encouragement helped me to complete my work successfully.
+              </p>
+              <p className="indent-[24pt]">
+                I would like to take this opportunity to express my sincere gratitude to {formData.directorName || 'Rev. Fr. Dr. V. Antonysamy SJ.'}, Director of Andhra Loyola Institute of Engineering & Technology, Vijayawada, for allowing me to utilize the college resources and facilities for the successful completion of my project.
+              </p>
+              <p className="indent-[24pt]">
+                I would like to express my sincere gratitude to {formData.hodName || 'Dr. M.CHINNARAO'}, Head of the Department, Information Technology, for his encouragement and support throughout the project and for providing all the required facilities.
+              </p>
+              <p className="indent-[24pt]">
+                In particular, I am very grateful to my Project Guide {formData.guideName}, Department of IT, for the guidance and support given throughout the project. I am thankful for the support and cooperation.
+              </p>
+              <p className="indent-[24pt]">
+                I gratefully acknowledge the support, encouragement and patience of my parents. I would also like to thank all the teaching and non-teaching staff members of the Department of IT, Andhra Loyola Institute of Engineering and Technology, Vijayawada, who supported me during my project and helped me in completing my project entitled "{formData.projectName}".
+              </p>
+            </div>
+
+            {/* Signature Strictly Right Aligned */}
+            <div className="mt-[25mm] text-right font-serif">
+              <div className="h-[10mm]"></div>
+              <p className="font-bold text-[12pt] uppercase">{formData.studentName}</p>
+              <p className="font-bold text-[12pt]">({formData.rollNo})</p>
+            </div>
+          </div>
+        )}
+
+        {/* =========================================================================
+            PAGE 6: INDEX / TABLE OF CONTENTS (Exact Dot Leader Academic Alignment)
+           ========================================================================= */}
+        {(activeTab === 'all' || activeTab === 'prelim') && (
+          <div className="a4-sheet bg-white text-black shadow-2xl border border-slate-200 print:border-none print:shadow-none flex flex-col justify-start page-break font-serif">
+            <h2 className="text-center text-[14pt] font-bold uppercase tracking-widest text-black mb-[6mm]">
               INDEX
             </h2>
 
-            <div className="w-full text-xs sm:text-sm">
-              <div className="flex justify-between font-bold border-b-2 border-slate-900 pb-2 uppercase text-slate-950">
-                <span>CONTENTS</span>
-                <span>PAGE NO</span>
-              </div>
+            {/* Header: CONTENTS on Left, PAGE NO on Right */}
+            <div className="flex justify-between items-baseline font-bold text-[12pt] uppercase border-b-2 border-black pb-1 mb-3">
+              <span>CONTENTS</span>
+              <span>PAGE NO</span>
+            </div>
 
-              <div className="divide-y divide-slate-100 text-slate-800">
-                {chapters.map((c) => (
-                  <div key={c.id} className="py-2.5">
-                    <div className="flex justify-between font-bold text-slate-950 uppercase">
-                      <span>{c.id}. {c.title}</span>
-                      <span>{c.id === 1 ? '1' : c.id === 2 ? '4' : c.id === 3 ? '9' : c.id === 4 ? '16' : c.id === 5 ? '21' : c.id === 6 ? '29' : c.id === 7 ? '32' : '33'}</span>
+            {/* Dot Leader Rows matching exactly the Word XML */}
+            <div className="space-y-[1.8mm] text-[11pt]">
+              {chapters.map((c) => {
+                const chapterPage = c.id === 1 ? '1' : c.id === 2 ? '4' : c.id === 3 ? '9' : c.id === 4 ? '16' : c.id === 5 ? '21' : c.id === 6 ? '29' : c.id === 7 ? '32' : '33';
+                return (
+                  <div key={c.id} className="space-y-[1.2mm]">
+                    <div className="flex items-baseline w-full font-bold uppercase text-[11.5pt]">
+                      <span className="flex-shrink-0 pr-1">{c.id}. {c.title}</span>
+                      <span className="flex-grow border-b border-dotted border-black mx-1 h-3"></span>
+                      <span className="flex-shrink-0 pl-1 font-mono text-[11pt]">{chapterPage}</span>
                     </div>
-                    <div className="space-y-1 mt-1 pl-4 text-slate-700 font-normal">
-                      {c.subsections.map((sub) => (
-                        <div key={sub.number} className="flex justify-between text-xs py-0.5">
-                          <span>{sub.number} {sub.title}</span>
-                          <span className="text-slate-500 font-mono">
-                            {sub.number === '1.1' ? '1' : sub.number === '2.1' ? '4' : sub.number === '3.1' ? '9' : sub.number === '4.1' ? '16' : '...'}
-                          </span>
+
+                    {c.subsections.map((sub) => {
+                      const subPage = sub.number === '1.1' ? '1' : sub.number === '1.2' ? '1' : sub.number === '1.3' ? '2' : sub.number === '1.4' ? '2' : sub.number === '1.5' ? '2' : sub.number === '1.6' ? '2' : sub.number === '1.7' ? '3' : sub.number === '1.8' ? '3' : sub.number === '1.9' ? '3' : sub.number === '2.1' ? '4' : sub.number === '2.2' ? '4' : sub.number === '2.3' ? '5' : sub.number === '2.4' ? '6' : sub.number === '2.5' ? '7' : sub.number === '3.1' ? '9' : sub.number === '3.2' ? '9' : sub.number === '3.3' ? '10' : sub.number === '3.4' ? '11' : sub.number === '3.5' ? '12' : sub.number === '3.6' ? '13' : sub.number === '3.7' ? '13' : sub.number === '3.8' ? '14' : sub.number === '4.1' ? '16' : sub.number === '4.2' ? '16' : sub.number === '4.3' ? '18' : sub.number === '4.4' ? '18' : sub.number === '4.5' ? '19' : sub.number === '4.6' ? '19' : sub.number === '4.7' ? '19' : sub.number === '4.8' ? '20' : sub.number === '4.9' ? '20' : sub.number === '5.1' ? '21' : sub.number === '5.2' ? '23' : sub.number === '5.3' ? '26' : sub.number === '6.1' ? '29' : sub.number === '6.2' ? '29' : sub.number === '6.3' ? '30' : sub.number === '6.4' ? '30' : sub.number === '6.5' ? '30' : sub.number === '7.1' ? '32' : sub.number === '7.2' ? '32' : '33';
+                      return (
+                        <div key={sub.number} className="flex items-baseline w-full pl-5 text-[11pt]">
+                          <span className="flex-shrink-0 pr-1 text-black">{sub.number} {sub.title}</span>
+                          <span className="flex-grow border-b border-dotted border-black mx-1 h-3"></span>
+                          <span className="flex-shrink-0 pl-1 font-mono text-[10.5pt]">{subPage}</span>
                         </div>
-                      ))}
-                    </div>
+                      );
+                    })}
                   </div>
-                ))}
-              </div>
+                );
+              })}
             </div>
           </div>
         )}
 
         {/* =========================================================================
-            LIST OF FIGURES & TABLES (Exact Matching Numbering & Titles)
+            PAGE 7: LIST OF FIGURES & LIST OF TABLES (Exact Dot Leader Academic Alignment)
            ========================================================================= */}
         {(activeTab === 'all' || activeTab === 'prelim') && (
-          <div className="report-page bg-white text-slate-900 p-12 sm:p-16 rounded-xl shadow-2xl border border-slate-200 print:border-none print:shadow-none print:p-0 print:m-0 min-h-[1050px] relative page-break font-serif">
-            <div>
-              <h2 className="text-center text-lg font-bold uppercase tracking-widest text-slate-950 border-b-2 border-slate-900 pb-2 mb-6">
-                LIST OF FIGURES
-              </h2>
-              <table className="w-full text-xs sm:text-sm border-collapse border border-slate-400 mb-12">
-                <thead>
-                  <tr className="bg-slate-100 border-b border-slate-400 font-bold text-slate-950">
-                    <th className="border border-slate-400 px-3 py-2 text-center w-16">S.NO</th>
-                    <th className="border border-slate-400 px-4 py-2 text-left">TITLE</th>
-                    <th className="border border-slate-400 px-3 py-2 text-center w-24">PAGE NO</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {listOfFigures.map((fig) => (
-                    <tr key={fig.number} className="border-b border-slate-300">
-                      <td className="border border-slate-300 px-3 py-1.5 text-center">{fig.number}</td>
-                      <td className="border border-slate-300 px-4 py-1.5">{fig.title}</td>
-                      <td className="border border-slate-300 px-3 py-1.5 text-center">{fig.pageNo}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+          <div className="a4-sheet bg-white text-black shadow-2xl border border-slate-200 print:border-none print:shadow-none flex flex-col justify-start page-break font-serif">
+            <h2 className="text-center text-[14pt] font-bold uppercase tracking-widest text-black mb-[4mm]">
+              LIST OF FIGURES
+            </h2>
 
-              <h2 className="text-center text-lg font-bold uppercase tracking-widest text-slate-950 border-b-2 border-slate-900 pb-2 mb-6">
-                LIST OF TABLES
-              </h2>
-              <table className="w-full text-xs sm:text-sm border-collapse border border-slate-400">
-                <thead>
-                  <tr className="bg-slate-100 border-b border-slate-400 font-bold text-slate-950">
-                    <th className="border border-slate-400 px-3 py-2 text-center w-24">TABLE NO</th>
-                    <th className="border border-slate-400 px-4 py-2 text-left">TITLE</th>
-                    <th className="border border-slate-400 px-3 py-2 text-center w-24">PAGE NO</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {listOfTables.map((tbl) => (
-                    <tr key={tbl.number} className="border-b border-slate-300">
-                      <td className="border border-slate-300 px-3 py-1.5 text-center">{tbl.number}</td>
-                      <td className="border border-slate-300 px-4 py-1.5">{tbl.title}</td>
-                      <td className="border border-slate-300 px-3 py-1.5 text-center">{tbl.pageNo}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="flex justify-between items-baseline font-bold text-[11.5pt] uppercase border-b border-black pb-1 mb-2">
+              <span className="w-[18mm]">S.NO</span>
+              <span className="flex-1 px-2">TITLE</span>
+              <span className="w-[20mm] text-right">PAGE NO</span>
+            </div>
+
+            <div className="space-y-[1.8mm] text-[11pt] mb-[8mm]">
+              {listOfFigures.map((fig) => (
+                <div key={fig.number} className="flex items-baseline w-full">
+                  <span className="w-[18mm] flex-shrink-0 font-medium">{fig.number}.</span>
+                  <span className="flex-shrink-0 pr-1">{fig.title}</span>
+                  <span className="flex-grow border-b border-dotted border-black mx-1 h-3"></span>
+                  <span className="w-[20mm] flex-shrink-0 text-right font-mono text-[10.5pt]">{fig.pageNo}</span>
+                </div>
+              ))}
+            </div>
+
+            <h2 className="text-center text-[14pt] font-bold uppercase tracking-widest text-black my-[4mm]">
+              LIST OF TABLES
+            </h2>
+
+            <div className="flex justify-between items-baseline font-bold text-[11.5pt] uppercase border-b border-black pb-1 mb-2">
+              <span className="w-[24mm]">TABLE NO</span>
+              <span className="flex-1 px-2">TITLE</span>
+              <span className="w-[20mm] text-right">PAGE NO</span>
+            </div>
+
+            <div className="space-y-[1.8mm] text-[11pt]">
+              {listOfTables.map((tbl) => (
+                <div key={tbl.number} className="flex items-baseline w-full">
+                  <span className="w-[24mm] flex-shrink-0 font-medium">{tbl.number}</span>
+                  <span className="flex-shrink-0 pr-1">{tbl.title}</span>
+                  <span className="flex-grow border-b border-dotted border-black mx-1 h-3"></span>
+                  <span className="w-[20mm] flex-shrink-0 text-right font-mono text-[10.5pt]">{tbl.pageNo}</span>
+                </div>
+              ))}
             </div>
           </div>
         )}
 
         {/* =========================================================================
-            ABSTRACT
+            PAGE 8: ABSTRACT (Heading Center, Body Justified)
            ========================================================================= */}
         {(activeTab === 'all' || activeTab === 'prelim') && (
-          <div className="report-page bg-white text-slate-900 p-12 sm:p-16 rounded-xl shadow-2xl border border-slate-200 print:border-none print:shadow-none print:p-0 print:m-0 min-h-[1050px] relative page-break font-serif">
-            <h2 className="text-center text-lg font-bold uppercase tracking-widest text-slate-950 border-b-2 border-slate-900 pb-2 mb-8">
+          <div className="a4-sheet bg-white text-black shadow-2xl border border-slate-200 print:border-none print:shadow-none flex flex-col justify-start page-break font-serif">
+            <h2 className="text-center text-[14pt] font-bold uppercase tracking-widest text-black mb-[6mm]">
               ABSTRACT
             </h2>
-            <div className="text-justify text-sm sm:text-base leading-relaxed text-slate-800 space-y-4 indent-8">
+            <div className="text-justify text-[12pt] leading-[1.5] space-y-[4mm] indent-[24pt] text-black">
               {abstract.split('\n').map((p, i) => (
                 <p key={i}>{p}</p>
               ))}
@@ -415,47 +436,47 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ report }) => {
         )}
 
         {/* =========================================================================
-            CHAPTERS 1 TO 8 (With Exact Blueprints & Screenshots)
+            CHAPTERS 1 TO 8 (Exact Headings Center, Subsections Left Bold, Body Justified)
            ========================================================================= */}
         {(activeTab === 'all' || activeTab === 'chapters') && (
-          <div className="space-y-8 print:space-y-0">
+          <div className="w-full flex flex-col items-center space-y-8 print:space-y-0">
             {chapters.map((chapter) => (
               <div
                 key={chapter.id}
-                className="report-page bg-white text-slate-900 p-12 sm:p-16 rounded-xl shadow-2xl border border-slate-200 print:border-none print:shadow-none print:p-0 print:m-0 min-h-[1050px] relative page-break font-serif space-y-8"
+                className="a4-sheet bg-white text-black shadow-2xl border border-slate-200 print:border-none print:shadow-none flex flex-col justify-start page-break font-serif"
               >
-                {/* Chapter Heading */}
-                <div className="border-b-2 border-slate-900 pb-3">
-                  <h2 className="text-lg sm:text-xl font-bold uppercase tracking-wider text-slate-950">
-                    {chapter.id}. {chapter.title}
-                  </h2>
-                </div>
+                {/* Centered Chapter Heading matching the original docx */}
+                <h2 className="text-center text-[14pt] font-bold uppercase tracking-wider text-black mb-[6mm]">
+                  {chapter.id}. {chapter.title}
+                </h2>
 
                 {/* Subsections */}
-                <div className="space-y-6">
+                <div className="space-y-[5mm]">
                   {chapter.subsections.map((sub) => (
-                    <div key={sub.number} className="space-y-3">
-                      <h3 className="text-sm sm:text-base font-bold uppercase text-slate-900">
+                    <div key={sub.number} className="space-y-[2.5mm]">
+                      {/* Left-Aligned Subsection Heading */}
+                      <h3 className="text-left text-[12pt] font-bold uppercase text-black">
                         {sub.number} {sub.title}
                       </h3>
 
-                      <div className="text-justify text-xs sm:text-sm leading-relaxed text-slate-800 space-y-3 indent-8">
+                      {/* Justified Paragraphs with 24pt indent */}
+                      <div className="text-justify text-[12pt] leading-[1.45] text-black space-y-[2.5mm]">
                         {sub.content.map((p, i) => (
-                          <p key={i}>{p}</p>
+                          <p key={i} className="indent-[24pt]">{p}</p>
                         ))}
                       </div>
 
-                      {/* Optional SubSection Table */}
+                      {/* Tables matching exact format */}
                       {sub.table && (
-                        <div className="my-5 overflow-x-auto">
-                          <p className="text-xs font-bold text-slate-900 mb-1 text-center">
+                        <div className="my-[4mm]">
+                          <p className="text-[11pt] font-bold text-black mb-1 text-left">
                             Table {sub.number}: {sub.table.caption}
                           </p>
-                          <table className="w-full text-xs border-collapse border border-slate-400">
+                          <table className="w-full text-[10pt] border-collapse border border-black">
                             <thead>
-                              <tr className="bg-slate-100 border-b border-slate-400 font-bold text-slate-950">
+                              <tr className="bg-slate-100 border-b border-black font-bold">
                                 {sub.table.headers.map((h, hi) => (
-                                  <th key={hi} className="border border-slate-400 px-3 py-2 text-left">
+                                  <th key={hi} className="border border-black px-2 py-1.5 text-center">
                                     {h}
                                   </th>
                                 ))}
@@ -463,9 +484,9 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ report }) => {
                             </thead>
                             <tbody>
                               {sub.table.rows.map((r, ri) => (
-                                <tr key={ri} className="border-b border-slate-300 hover:bg-slate-50">
+                                <tr key={ri} className="border-b border-black">
                                   {r.map((cell, ci) => (
-                                    <td key={ci} className="border border-slate-300 px-3 py-1.5 font-normal">
+                                    <td key={ci} className={`border border-black px-2 py-1.5 ${ci === 0 ? 'text-center font-medium' : 'text-left'}`}>
                                       {cell}
                                     </td>
                                   ))}
@@ -476,123 +497,119 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ report }) => {
                         </div>
                       )}
 
-                      {/* Optional Code Listing */}
+                      {/* Code Listing */}
                       {sub.codeListing && (
-                        <div className="my-5 bg-slate-950 text-slate-100 p-4 rounded-lg font-mono text-xs overflow-x-auto shadow-inner border border-slate-800 print:bg-slate-100 print:text-black print:border-slate-300">
-                          <div className="text-[11px] font-bold text-blue-400 print:text-blue-700 pb-2 mb-2 border-b border-slate-800 print:border-slate-300">
+                        <div className="my-[4mm] bg-slate-50 text-black p-3 rounded font-mono text-[9.5pt] border border-slate-300">
+                          <div className="font-bold pb-1 mb-1 border-b border-slate-300">
                             {sub.codeListing.caption}
                           </div>
-                          <pre className="whitespace-pre overflow-x-auto">{sub.codeListing.code}</pre>
+                          <pre className="whitespace-pre overflow-x-auto leading-tight">{sub.codeListing.code}</pre>
                         </div>
                       )}
 
-                      {/* Blueprint / Architecture Diagrams and Screenshots */}
+                      {/* Blueprint & Architecture Diagrams (Centered with exact captions) */}
                       {sub.figure && (
-                        <div className="my-6 p-4 border border-slate-200 rounded-lg bg-slate-50 flex flex-col items-center justify-center text-center">
-                          {sub.figure.imageSrc ? (
-                            <img
-                              src={sub.figure.imageSrc}
-                              alt={sub.figure.caption}
-                              className="max-w-full max-h-[500px] object-contain rounded border border-slate-300 shadow-sm"
-                            />
-                          ) : (
-                            <div className="w-full max-w-md py-6 bg-white border border-slate-300 rounded shadow-sm flex flex-col items-center justify-center text-slate-600 gap-2 font-mono text-xs">
-                              <Layers className="w-8 h-8 text-blue-600" />
-                              <span className="font-bold text-slate-900 uppercase">Architecture Blueprint</span>
-                              <span className="text-[11px] text-slate-500 px-4">{sub.figure.description}</span>
+                        <div className="my-[5mm] text-center">
+                          {sub.figure.imageSrc && (
+                            <div className="flex justify-center mb-2">
+                              <img
+                                src={sub.figure.imageSrc}
+                                alt={sub.figure.caption}
+                                className="max-w-[90%] max-h-[380px] object-contain rounded border border-slate-300 shadow-sm"
+                              />
                             </div>
                           )}
-                          <p className="text-xs font-bold text-slate-900 mt-2.5 font-serif">
+                          <p className="text-[11pt] font-bold text-black text-center font-serif">
                             {sub.figure.caption}
                           </p>
-                          <p className="text-[11px] text-slate-600 italic font-serif mt-0.5">
+                          <p className="text-[10pt] text-slate-700 italic text-justify indent-[24pt] font-serif max-w-[150mm] mx-auto mt-1">
                             Description: {sub.figure.description}
                           </p>
                         </div>
                       )}
 
-                      {/* In Chapter 5, render Figures 5 to 18 */}
+                      {/* In Chapter 5: Output Screens */}
                       {chapter.id === 5 && sub.number === '5.1' && (
-                        <div className="space-y-6 pt-4">
-                          <div className="flex flex-col items-center">
-                            <img src={REPORT_FIGURES[5].src} alt="Figure 5" className="max-w-xl w-full rounded border border-slate-300 shadow-sm" />
-                            <p className="text-xs font-bold text-slate-900 mt-2">Figure 5: Login Page</p>
-                            <p className="text-[11px] text-slate-600 italic">Description: The login screen shows the brand, credentials form, and demo access.</p>
+                        <div className="space-y-[5mm] pt-2">
+                          <div className="text-center">
+                            <img src={REPORT_FIGURES[5].src} alt="Figure 5" className="max-w-[85%] mx-auto rounded border border-slate-300 shadow-sm" />
+                            <p className="text-[11pt] font-bold text-black mt-2 font-serif">Figure 5: Login Page</p>
+                            <p className="text-[10pt] text-slate-700 italic text-justify indent-[24pt] max-w-[150mm] mx-auto mt-1">Description: The login screen shows the brand, credentials form, and demo access.</p>
                           </div>
-                          <div className="flex flex-col items-center">
-                            <img src={REPORT_FIGURES[6].src} alt="Figure 6" className="max-w-xl w-full rounded border border-slate-300 shadow-sm" />
-                            <p className="text-xs font-bold text-slate-900 mt-2">Figure 6: Signup Page</p>
-                            <p className="text-[11px] text-slate-600 italic">Description: The sign-up form collects name, email, and validated password.</p>
+                          <div className="text-center">
+                            <img src={REPORT_FIGURES[6].src} alt="Figure 6" className="max-w-[85%] mx-auto rounded border border-slate-300 shadow-sm" />
+                            <p className="text-[11pt] font-bold text-black mt-2 font-serif">Figure 6: Signup Page</p>
+                            <p className="text-[10pt] text-slate-700 italic text-justify indent-[24pt] max-w-[150mm] mx-auto mt-1">Description: The sign-up form collects name, email, and validated password.</p>
                           </div>
-                          <div className="flex flex-col items-center">
-                            <img src={REPORT_FIGURES[7].src} alt="Figure 7" className="max-w-xl w-full rounded border border-slate-300 shadow-sm" />
-                            <p className="text-xs font-bold text-slate-900 mt-2">Figure 7: Dashboard</p>
-                            <p className="text-[11px] text-slate-600 italic">Description: Dashboard displays summary metrics, interactive chart, and ticker strip.</p>
+                          <div className="text-center">
+                            <img src={REPORT_FIGURES[7].src} alt="Figure 7" className="max-w-[85%] mx-auto rounded border border-slate-300 shadow-sm" />
+                            <p className="text-[11pt] font-bold text-black mt-2 font-serif">Figure 7: Dashboard</p>
+                            <p className="text-[10pt] text-slate-700 italic text-justify indent-[24pt] max-w-[150mm] mx-auto mt-1">Description: Dashboard displays summary metrics, interactive chart, and ticker strip.</p>
                           </div>
-                          <div className="flex flex-col items-center">
-                            <img src={REPORT_FIGURES[8].src} alt="Figure 8" className="max-w-xl w-full rounded border border-slate-300 shadow-sm" />
-                            <p className="text-xs font-bold text-slate-900 mt-2">Figure 8: Price chart with SMA, EMA and RSI</p>
-                            <p className="text-[11px] text-slate-600 italic">Description: 3M range chart with SMA, EMA overlays, and 14-period RSI sub-panel.</p>
+                          <div className="text-center">
+                            <img src={REPORT_FIGURES[8].src} alt="Figure 8" className="max-w-[85%] mx-auto rounded border border-slate-300 shadow-sm" />
+                            <p className="text-[11pt] font-bold text-black mt-2 font-serif">Figure 8: Price chart with SMA, EMA and RSI</p>
+                            <p className="text-[10pt] text-slate-700 italic text-justify indent-[24pt] max-w-[150mm] mx-auto mt-1">Description: 3M range chart with SMA, EMA overlays, and 14-period RSI sub-panel.</p>
                           </div>
                         </div>
                       )}
 
                       {chapter.id === 5 && sub.number === '5.2' && (
-                        <div className="space-y-6 pt-4">
-                          <div className="flex flex-col items-center">
-                            <img src={REPORT_FIGURES[9].src} alt="Figure 9" className="max-w-xl w-full rounded border border-slate-300 shadow-sm" />
-                            <p className="text-xs font-bold text-slate-900 mt-2">Figure 9: Watchlist</p>
-                            <p className="text-[11px] text-slate-600 italic">Description: Watchlist table displays tracked symbols and real-time performance.</p>
+                        <div className="space-y-[5mm] pt-2">
+                          <div className="text-center">
+                            <img src={REPORT_FIGURES[9].src} alt="Figure 9" className="max-w-[85%] mx-auto rounded border border-slate-300 shadow-sm" />
+                            <p className="text-[11pt] font-bold text-black mt-2 font-serif">Figure 9: Watchlist</p>
+                            <p className="text-[10pt] text-slate-700 italic text-justify indent-[24pt] max-w-[150mm] mx-auto mt-1">Description: Watchlist table displays tracked symbols and real-time performance.</p>
                           </div>
-                          <div className="flex flex-col items-center">
-                            <img src={REPORT_FIGURES[10].src} alt="Figure 10" className="max-w-xl w-full rounded border border-slate-300 shadow-sm" />
-                            <p className="text-xs font-bold text-slate-900 mt-2">Figure 10: Adding a Symbol to the Watchlist</p>
-                            <p className="text-[11px] text-slate-600 italic">Description: Adding an asset appends the row with immediate toast feedback.</p>
+                          <div className="text-center">
+                            <img src={REPORT_FIGURES[10].src} alt="Figure 10" className="max-w-[85%] mx-auto rounded border border-slate-300 shadow-sm" />
+                            <p className="text-[11pt] font-bold text-black mt-2 font-serif">Figure 10: Adding a Symbol to the Watchlist</p>
+                            <p className="text-[10pt] text-slate-700 italic text-justify indent-[24pt] max-w-[150mm] mx-auto mt-1">Description: Adding an asset appends the row with immediate toast feedback.</p>
                           </div>
-                          <div className="flex flex-col items-center">
-                            <img src={REPORT_FIGURES[11].src} alt="Figure 11" className="max-w-xl w-full rounded border border-slate-300 shadow-sm" />
-                            <p className="text-xs font-bold text-slate-900 mt-2">Figure 11: Duplicate Symbol Validation</p>
-                            <p className="text-[11px] text-slate-600 italic">Description: Duplicate asset addition is safely blocked with validation messaging.</p>
+                          <div className="text-center">
+                            <img src={REPORT_FIGURES[11].src} alt="Figure 11" className="max-w-[85%] mx-auto rounded border border-slate-300 shadow-sm" />
+                            <p className="text-[11pt] font-bold text-black mt-2 font-serif">Figure 11: Duplicate Symbol Validation</p>
+                            <p className="text-[10pt] text-slate-700 italic text-justify indent-[24pt] max-w-[150mm] mx-auto mt-1">Description: Duplicate asset addition is safely blocked with validation messaging.</p>
                           </div>
-                          <div className="flex flex-col items-center">
-                            <img src={REPORT_FIGURES[12].src} alt="Figure 12" className="max-w-xl w-full rounded border border-slate-300 shadow-sm" />
-                            <p className="text-xs font-bold text-slate-900 mt-2">Figure 12: Portfolio</p>
-                            <p className="text-[11px] text-slate-600 italic">Description: Portfolio table with invested cost basis, current value, and individual P/L.</p>
+                          <div className="text-center">
+                            <img src={REPORT_FIGURES[12].src} alt="Figure 12" className="max-w-[85%] mx-auto rounded border border-slate-300 shadow-sm" />
+                            <p className="text-[11pt] font-bold text-black mt-2 font-serif">Figure 12: Portfolio</p>
+                            <p className="text-[10pt] text-slate-700 italic text-justify indent-[24pt] max-w-[150mm] mx-auto mt-1">Description: Portfolio table with invested cost basis, current value, and individual P/L.</p>
                           </div>
-                          <div className="flex flex-col items-center">
-                            <img src={REPORT_FIGURES[13].src} alt="Figure 13" className="max-w-xl w-full rounded border border-slate-300 shadow-sm" />
-                            <p className="text-xs font-bold text-slate-900 mt-2">Figure 13: Add Holding Dialog</p>
-                            <p className="text-[11px] text-slate-600 italic">Description: Dialog collects asset symbol, share quantity, and purchase price.</p>
+                          <div className="text-center">
+                            <img src={REPORT_FIGURES[13].src} alt="Figure 13" className="max-w-[85%] mx-auto rounded border border-slate-300 shadow-sm" />
+                            <p className="text-[11pt] font-bold text-black mt-2 font-serif">Figure 13: Add Holding Dialog</p>
+                            <p className="text-[10pt] text-slate-700 italic text-justify indent-[24pt] max-w-[150mm] mx-auto mt-1">Description: Dialog collects asset symbol, share quantity, and purchase price.</p>
                           </div>
-                          <div className="flex flex-col items-center">
-                            <img src={REPORT_FIGURES[14].src} alt="Figure 14" className="max-w-xl w-full rounded border border-slate-300 shadow-sm" />
-                            <p className="text-xs font-bold text-slate-900 mt-2">Figure 14: Input Validation</p>
-                            <p className="text-[11px] text-slate-600 italic">Description: Enforces non-negative inputs and prevents corrupt records.</p>
+                          <div className="text-center">
+                            <img src={REPORT_FIGURES[14].src} alt="Figure 14" className="max-w-[85%] mx-auto rounded border border-slate-300 shadow-sm" />
+                            <p className="text-[11pt] font-bold text-black mt-2 font-serif">Figure 14: Input Validation</p>
+                            <p className="text-[10pt] text-slate-700 italic text-justify indent-[24pt] max-w-[150mm] mx-auto mt-1">Description: Enforces non-negative inputs and prevents corrupt records.</p>
                           </div>
                         </div>
                       )}
 
                       {chapter.id === 5 && sub.number === '5.3' && (
-                        <div className="space-y-6 pt-4">
-                          <div className="flex flex-col items-center">
-                            <img src={REPORT_FIGURES[15].src} alt="Figure 15" className="max-w-xl w-full rounded border border-slate-300 shadow-sm" />
-                            <p className="text-xs font-bold text-slate-900 mt-2">Figure 15: Settings Page</p>
-                            <p className="text-[11px] text-slate-600 italic">Description: Controls for themes, chart indicators, and data mode options.</p>
+                        <div className="space-y-[5mm] pt-2">
+                          <div className="text-center">
+                            <img src={REPORT_FIGURES[15].src} alt="Figure 15" className="max-w-[85%] mx-auto rounded border border-slate-300 shadow-sm" />
+                            <p className="text-[11pt] font-bold text-black mt-2 font-serif">Figure 15: Settings Page</p>
+                            <p className="text-[10pt] text-slate-700 italic text-justify indent-[24pt] max-w-[150mm] mx-auto mt-1">Description: Controls for themes, chart indicators, and data mode options.</p>
                           </div>
-                          <div className="flex flex-col items-center">
-                            <img src={REPORT_FIGURES[16].src} alt="Figure 16" className="max-w-xl w-full rounded border border-slate-300 shadow-sm" />
-                            <p className="text-xs font-bold text-slate-900 mt-2">Figure 16: Light Theme</p>
-                            <p className="text-[11px] text-slate-600 italic">Description: The application executing under the light theme palette.</p>
+                          <div className="text-center">
+                            <img src={REPORT_FIGURES[16].src} alt="Figure 16" className="max-w-[85%] mx-auto rounded border border-slate-300 shadow-sm" />
+                            <p className="text-[11pt] font-bold text-black mt-2 font-serif">Figure 16: Light Theme</p>
+                            <p className="text-[10pt] text-slate-700 italic text-justify indent-[24pt] max-w-[150mm] mx-auto mt-1">Description: The application executing under the light theme palette.</p>
                           </div>
-                          <div className="flex flex-col items-center">
-                            <img src={REPORT_FIGURES[17].src} alt="Figure 17" className="max-w-xl w-full rounded border border-slate-300 shadow-sm" />
-                            <p className="text-xs font-bold text-slate-900 mt-2">Figure 17: Reset Demo Data Confirmation</p>
-                            <p className="text-[11px] text-slate-600 italic">Description: Modal confirming restoration of the clean baseline sample dataset.</p>
+                          <div className="text-center">
+                            <img src={REPORT_FIGURES[17].src} alt="Figure 17" className="max-w-[85%] mx-auto rounded border border-slate-300 shadow-sm" />
+                            <p className="text-[11pt] font-bold text-black mt-2 font-serif">Figure 17: Reset Demo Data Confirmation</p>
+                            <p className="text-[10pt] text-slate-700 italic text-justify indent-[24pt] max-w-[150mm] mx-auto mt-1">Description: Modal confirming restoration of the clean baseline sample dataset.</p>
                           </div>
-                          <div className="flex flex-col items-center">
-                            <img src={REPORT_FIGURES[18].src} alt="Figure 18" className="max-w-xl w-full rounded border border-slate-300 shadow-sm" />
-                            <p className="text-xs font-bold text-slate-900 mt-2">Figure 18: Empty State for a New Account</p>
-                            <p className="text-[11px] text-slate-600 italic">Description: New user account initialized with empty state notices.</p>
+                          <div className="text-center">
+                            <img src={REPORT_FIGURES[18].src} alt="Figure 18" className="max-w-[85%] mx-auto rounded border border-slate-300 shadow-sm" />
+                            <p className="text-[11pt] font-bold text-black mt-2 font-serif">Figure 18: Empty State for a New Account</p>
+                            <p className="text-[10pt] text-slate-700 italic text-justify indent-[24pt] max-w-[150mm] mx-auto mt-1">Description: New user account initialized with empty state notices.</p>
                           </div>
                         </div>
                       )}
