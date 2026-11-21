@@ -274,7 +274,10 @@ ${chapters.map(c => `
     ` : ''}
     ${sub.figure ? `
       <div class="center" style="margin: 16pt 0;">
-        <p class="no-indent center"><b>${sub.figure.caption}</b></p>
+        ${sub.figure.imageSrc ? `
+          <img src="${sub.figure.imageSrc}" style="max-width: 580px; max-height: 340px;" alt="${sub.figure.caption}" /><br/>
+        ` : ''}
+        <p class="no-indent center" style="margin-top: 6pt;"><b>${sub.figure.caption}</b></p>
         <p class="no-indent center" style="font-size: 10pt; color: #555;"><i>Description: ${sub.figure.description}</i></p>
       </div>
     ` : ''}

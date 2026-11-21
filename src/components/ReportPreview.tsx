@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { GeneratedReport } from '../types';
-import { COLLEGE_LOGO_BASE64, REPORT_FIGURES } from '../assets/reportImages';
+import { COLLEGE_LOGO_BASE64 } from '../assets/reportImages';
+import { getRelativeFiguresForProject } from '../utils/relativePictures';
 import { exportReportToWord } from '../utils/docxExport';
 import { Printer, Download, Copy, Check } from 'lucide-react';
 
@@ -13,6 +14,8 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ report }) => {
   const [activeTab, setActiveTab] = useState<'all' | 'prelim' | 'chapters'>('all');
   const [copied, setCopied] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+
+  const relativeFigures = getRelativeFiguresForProject(formData.projectName, formData.domain);
 
   const handlePrint = () => {
     window.print();
@@ -532,24 +535,24 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ report }) => {
                       {chapter.id === 5 && sub.number === '5.1' && (
                         <div className="space-y-[5mm] pt-2">
                           <div className="text-center">
-                            <img src={REPORT_FIGURES[5].src} alt="Figure 5" className="max-w-[85%] mx-auto rounded border border-slate-300 shadow-sm" />
-                            <p className="text-[11pt] font-bold text-black mt-2 font-serif">Figure 5: Login Page</p>
-                            <p className="text-[10pt] text-slate-700 italic text-justify indent-[24pt] max-w-[150mm] mx-auto mt-1">Description: The login screen shows the brand, credentials form, and demo access.</p>
+                            <img src={relativeFigures[5].imageSrc} alt="Figure 5" className="max-w-[85%] mx-auto rounded border border-slate-300 shadow-sm" />
+                            <p className="text-[11pt] font-bold text-black mt-2 font-serif">{relativeFigures[5].caption}</p>
+                            <p className="text-[10pt] text-slate-700 italic text-justify indent-[24pt] max-w-[150mm] mx-auto mt-1">Description: {relativeFigures[5].description}</p>
                           </div>
                           <div className="text-center">
-                            <img src={REPORT_FIGURES[6].src} alt="Figure 6" className="max-w-[85%] mx-auto rounded border border-slate-300 shadow-sm" />
-                            <p className="text-[11pt] font-bold text-black mt-2 font-serif">Figure 6: Signup Page</p>
-                            <p className="text-[10pt] text-slate-700 italic text-justify indent-[24pt] max-w-[150mm] mx-auto mt-1">Description: The sign-up form collects name, email, and validated password.</p>
+                            <img src={relativeFigures[6].imageSrc} alt="Figure 6" className="max-w-[85%] mx-auto rounded border border-slate-300 shadow-sm" />
+                            <p className="text-[11pt] font-bold text-black mt-2 font-serif">{relativeFigures[6].caption}</p>
+                            <p className="text-[10pt] text-slate-700 italic text-justify indent-[24pt] max-w-[150mm] mx-auto mt-1">Description: {relativeFigures[6].description}</p>
                           </div>
                           <div className="text-center">
-                            <img src={REPORT_FIGURES[7].src} alt="Figure 7" className="max-w-[85%] mx-auto rounded border border-slate-300 shadow-sm" />
-                            <p className="text-[11pt] font-bold text-black mt-2 font-serif">Figure 7: Dashboard</p>
-                            <p className="text-[10pt] text-slate-700 italic text-justify indent-[24pt] max-w-[150mm] mx-auto mt-1">Description: Dashboard displays summary metrics, interactive chart, and ticker strip.</p>
+                            <img src={relativeFigures[7].imageSrc} alt="Figure 7" className="max-w-[85%] mx-auto rounded border border-slate-300 shadow-sm" />
+                            <p className="text-[11pt] font-bold text-black mt-2 font-serif">{relativeFigures[7].caption}</p>
+                            <p className="text-[10pt] text-slate-700 italic text-justify indent-[24pt] max-w-[150mm] mx-auto mt-1">Description: {relativeFigures[7].description}</p>
                           </div>
                           <div className="text-center">
-                            <img src={REPORT_FIGURES[8].src} alt="Figure 8" className="max-w-[85%] mx-auto rounded border border-slate-300 shadow-sm" />
-                            <p className="text-[11pt] font-bold text-black mt-2 font-serif">Figure 8: Price chart with SMA, EMA and RSI</p>
-                            <p className="text-[10pt] text-slate-700 italic text-justify indent-[24pt] max-w-[150mm] mx-auto mt-1">Description: 3M range chart with SMA, EMA overlays, and 14-period RSI sub-panel.</p>
+                            <img src={relativeFigures[8].imageSrc} alt="Figure 8" className="max-w-[85%] mx-auto rounded border border-slate-300 shadow-sm" />
+                            <p className="text-[11pt] font-bold text-black mt-2 font-serif">{relativeFigures[8].caption}</p>
+                            <p className="text-[10pt] text-slate-700 italic text-justify indent-[24pt] max-w-[150mm] mx-auto mt-1">Description: {relativeFigures[8].description}</p>
                           </div>
                         </div>
                       )}
@@ -557,34 +560,34 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ report }) => {
                       {chapter.id === 5 && sub.number === '5.2' && (
                         <div className="space-y-[5mm] pt-2">
                           <div className="text-center">
-                            <img src={REPORT_FIGURES[9].src} alt="Figure 9" className="max-w-[85%] mx-auto rounded border border-slate-300 shadow-sm" />
-                            <p className="text-[11pt] font-bold text-black mt-2 font-serif">Figure 9: Watchlist</p>
-                            <p className="text-[10pt] text-slate-700 italic text-justify indent-[24pt] max-w-[150mm] mx-auto mt-1">Description: Watchlist table displays tracked symbols and real-time performance.</p>
+                            <img src={relativeFigures[9].imageSrc} alt="Figure 9" className="max-w-[85%] mx-auto rounded border border-slate-300 shadow-sm" />
+                            <p className="text-[11pt] font-bold text-black mt-2 font-serif">{relativeFigures[9].caption}</p>
+                            <p className="text-[10pt] text-slate-700 italic text-justify indent-[24pt] max-w-[150mm] mx-auto mt-1">Description: {relativeFigures[9].description}</p>
                           </div>
                           <div className="text-center">
-                            <img src={REPORT_FIGURES[10].src} alt="Figure 10" className="max-w-[85%] mx-auto rounded border border-slate-300 shadow-sm" />
-                            <p className="text-[11pt] font-bold text-black mt-2 font-serif">Figure 10: Adding a Symbol to the Watchlist</p>
-                            <p className="text-[10pt] text-slate-700 italic text-justify indent-[24pt] max-w-[150mm] mx-auto mt-1">Description: Adding an asset appends the row with immediate toast feedback.</p>
+                            <img src={relativeFigures[10].imageSrc} alt="Figure 10" className="max-w-[85%] mx-auto rounded border border-slate-300 shadow-sm" />
+                            <p className="text-[11pt] font-bold text-black mt-2 font-serif">{relativeFigures[10].caption}</p>
+                            <p className="text-[10pt] text-slate-700 italic text-justify indent-[24pt] max-w-[150mm] mx-auto mt-1">Description: {relativeFigures[10].description}</p>
                           </div>
                           <div className="text-center">
-                            <img src={REPORT_FIGURES[11].src} alt="Figure 11" className="max-w-[85%] mx-auto rounded border border-slate-300 shadow-sm" />
-                            <p className="text-[11pt] font-bold text-black mt-2 font-serif">Figure 11: Duplicate Symbol Validation</p>
-                            <p className="text-[10pt] text-slate-700 italic text-justify indent-[24pt] max-w-[150mm] mx-auto mt-1">Description: Duplicate asset addition is safely blocked with validation messaging.</p>
+                            <img src={relativeFigures[11].imageSrc} alt="Figure 11" className="max-w-[85%] mx-auto rounded border border-slate-300 shadow-sm" />
+                            <p className="text-[11pt] font-bold text-black mt-2 font-serif">{relativeFigures[11].caption}</p>
+                            <p className="text-[10pt] text-slate-700 italic text-justify indent-[24pt] max-w-[150mm] mx-auto mt-1">Description: {relativeFigures[11].description}</p>
                           </div>
                           <div className="text-center">
-                            <img src={REPORT_FIGURES[12].src} alt="Figure 12" className="max-w-[85%] mx-auto rounded border border-slate-300 shadow-sm" />
-                            <p className="text-[11pt] font-bold text-black mt-2 font-serif">Figure 12: Portfolio</p>
-                            <p className="text-[10pt] text-slate-700 italic text-justify indent-[24pt] max-w-[150mm] mx-auto mt-1">Description: Portfolio table with invested cost basis, current value, and individual P/L.</p>
+                            <img src={relativeFigures[12].imageSrc} alt="Figure 12" className="max-w-[85%] mx-auto rounded border border-slate-300 shadow-sm" />
+                            <p className="text-[11pt] font-bold text-black mt-2 font-serif">{relativeFigures[12].caption}</p>
+                            <p className="text-[10pt] text-slate-700 italic text-justify indent-[24pt] max-w-[150mm] mx-auto mt-1">Description: {relativeFigures[12].description}</p>
                           </div>
                           <div className="text-center">
-                            <img src={REPORT_FIGURES[13].src} alt="Figure 13" className="max-w-[85%] mx-auto rounded border border-slate-300 shadow-sm" />
-                            <p className="text-[11pt] font-bold text-black mt-2 font-serif">Figure 13: Add Holding Dialog</p>
-                            <p className="text-[10pt] text-slate-700 italic text-justify indent-[24pt] max-w-[150mm] mx-auto mt-1">Description: Dialog collects asset symbol, share quantity, and purchase price.</p>
+                            <img src={relativeFigures[13].imageSrc} alt="Figure 13" className="max-w-[85%] mx-auto rounded border border-slate-300 shadow-sm" />
+                            <p className="text-[11pt] font-bold text-black mt-2 font-serif">{relativeFigures[13].caption}</p>
+                            <p className="text-[10pt] text-slate-700 italic text-justify indent-[24pt] max-w-[150mm] mx-auto mt-1">Description: {relativeFigures[13].description}</p>
                           </div>
                           <div className="text-center">
-                            <img src={REPORT_FIGURES[14].src} alt="Figure 14" className="max-w-[85%] mx-auto rounded border border-slate-300 shadow-sm" />
-                            <p className="text-[11pt] font-bold text-black mt-2 font-serif">Figure 14: Input Validation</p>
-                            <p className="text-[10pt] text-slate-700 italic text-justify indent-[24pt] max-w-[150mm] mx-auto mt-1">Description: Enforces non-negative inputs and prevents corrupt records.</p>
+                            <img src={relativeFigures[14].imageSrc} alt="Figure 14" className="max-w-[85%] mx-auto rounded border border-slate-300 shadow-sm" />
+                            <p className="text-[11pt] font-bold text-black mt-2 font-serif">{relativeFigures[14].caption}</p>
+                            <p className="text-[10pt] text-slate-700 italic text-justify indent-[24pt] max-w-[150mm] mx-auto mt-1">Description: {relativeFigures[14].description}</p>
                           </div>
                         </div>
                       )}
@@ -592,24 +595,24 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ report }) => {
                       {chapter.id === 5 && sub.number === '5.3' && (
                         <div className="space-y-[5mm] pt-2">
                           <div className="text-center">
-                            <img src={REPORT_FIGURES[15].src} alt="Figure 15" className="max-w-[85%] mx-auto rounded border border-slate-300 shadow-sm" />
-                            <p className="text-[11pt] font-bold text-black mt-2 font-serif">Figure 15: Settings Page</p>
-                            <p className="text-[10pt] text-slate-700 italic text-justify indent-[24pt] max-w-[150mm] mx-auto mt-1">Description: Controls for themes, chart indicators, and data mode options.</p>
+                            <img src={relativeFigures[15].imageSrc} alt="Figure 15" className="max-w-[85%] mx-auto rounded border border-slate-300 shadow-sm" />
+                            <p className="text-[11pt] font-bold text-black mt-2 font-serif">{relativeFigures[15].caption}</p>
+                            <p className="text-[10pt] text-slate-700 italic text-justify indent-[24pt] max-w-[150mm] mx-auto mt-1">Description: {relativeFigures[15].description}</p>
                           </div>
                           <div className="text-center">
-                            <img src={REPORT_FIGURES[16].src} alt="Figure 16" className="max-w-[85%] mx-auto rounded border border-slate-300 shadow-sm" />
-                            <p className="text-[11pt] font-bold text-black mt-2 font-serif">Figure 16: Light Theme</p>
-                            <p className="text-[10pt] text-slate-700 italic text-justify indent-[24pt] max-w-[150mm] mx-auto mt-1">Description: The application executing under the light theme palette.</p>
+                            <img src={relativeFigures[16].imageSrc} alt="Figure 16" className="max-w-[85%] mx-auto rounded border border-slate-300 shadow-sm" />
+                            <p className="text-[11pt] font-bold text-black mt-2 font-serif">{relativeFigures[16].caption}</p>
+                            <p className="text-[10pt] text-slate-700 italic text-justify indent-[24pt] max-w-[150mm] mx-auto mt-1">Description: {relativeFigures[16].description}</p>
                           </div>
                           <div className="text-center">
-                            <img src={REPORT_FIGURES[17].src} alt="Figure 17" className="max-w-[85%] mx-auto rounded border border-slate-300 shadow-sm" />
-                            <p className="text-[11pt] font-bold text-black mt-2 font-serif">Figure 17: Reset Demo Data Confirmation</p>
-                            <p className="text-[10pt] text-slate-700 italic text-justify indent-[24pt] max-w-[150mm] mx-auto mt-1">Description: Modal confirming restoration of the clean baseline sample dataset.</p>
+                            <img src={relativeFigures[17].imageSrc} alt="Figure 17" className="max-w-[85%] mx-auto rounded border border-slate-300 shadow-sm" />
+                            <p className="text-[11pt] font-bold text-black mt-2 font-serif">{relativeFigures[17].caption}</p>
+                            <p className="text-[10pt] text-slate-700 italic text-justify indent-[24pt] max-w-[150mm] mx-auto mt-1">Description: {relativeFigures[17].description}</p>
                           </div>
                           <div className="text-center">
-                            <img src={REPORT_FIGURES[18].src} alt="Figure 18" className="max-w-[85%] mx-auto rounded border border-slate-300 shadow-sm" />
-                            <p className="text-[11pt] font-bold text-black mt-2 font-serif">Figure 18: Empty State for a New Account</p>
-                            <p className="text-[10pt] text-slate-700 italic text-justify indent-[24pt] max-w-[150mm] mx-auto mt-1">Description: New user account initialized with empty state notices.</p>
+                            <img src={relativeFigures[18].imageSrc} alt="Figure 18" className="max-w-[85%] mx-auto rounded border border-slate-300 shadow-sm" />
+                            <p className="text-[11pt] font-bold text-black mt-2 font-serif">{relativeFigures[18].caption}</p>
+                            <p className="text-[10pt] text-slate-700 italic text-justify indent-[24pt] max-w-[150mm] mx-auto mt-1">Description: {relativeFigures[18].description}</p>
                           </div>
                         </div>
                       )}

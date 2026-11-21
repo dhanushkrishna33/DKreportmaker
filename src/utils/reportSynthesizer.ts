@@ -1,5 +1,6 @@
 import { ReportFormData, GeneratedReport, Chapter, ReportItemRef } from '../types';
 import { RepoInfo } from './githubFetcher';
+import { getRelativeFiguresForProject } from './relativePictures';
 
 interface DomainProfile {
   name: string;
@@ -103,6 +104,8 @@ export function generateFullReport(formData: ReportFormData, repoInfo?: RepoInfo
   const githubSource = isNoLink
     ? 'No external repository link provided (Designed via brief algorithmic synthesis)'
     : formData.githubLink;
+
+  const relativeFigures = getRelativeFiguresForProject(title, domain.name);
 
   // Build tech stack list from GitHub package.json if present
   let techStackTable: (string | number)[][] = [];
@@ -322,10 +325,10 @@ export function generateFullReport(formData: ReportFormData, repoInfo?: RepoInfo
             `3. Data Storage Tier: Pluggable backends satisfying the DataProvider interface. In Demo Mode, an IndexedDB key-value store manages records locally with a publish/subscribe notification bus. In Cloud Mode, remote document stores and authentication APIs take over seamlessly.`,
           ],
           figure: {
-            caption: `Figure 1: System architecture of InvestFlow`,
+            caption: relativeFigures[1].caption,
             diagramType: 'architecture',
-            description: 'The UI layer never touches storage directly. The service layer forwards calls to the active provider, which is either the Demo provider (IndexedDB and localStorage) or the Firebase provider (Firebase Authentication and Cloud Firestore).',
-            imageSrc: './images/fig1_architecture.png',
+            description: relativeFigures[1].description,
+            imageSrc: relativeFigures[1].imageSrc,
           },
         },
         {
@@ -335,10 +338,10 @@ export function generateFullReport(formData: ReportFormData, repoInfo?: RepoInfo
             `During application bootstrap, the provider factory inspects runtime environment variables. If cloud synchronization is requested, it dynamically imports and initializes the cloud provider. Should configuration keys be absent or network initialization fail, a warning is logged and the application smoothly falls back to the local Demo provider without crashing.`,
           ],
           figure: {
-            caption: 'Figure 2: Provider selection and fallback flow',
+            caption: relativeFigures[2].caption,
             diagramType: 'flow',
-            description: 'The decision flow executed once when the application starts. After the provider is chosen, the saved session is restored; users with a valid session go to the Dashboard and all others to the Login page.',
-            imageSrc: './images/fig2_provider_flow.png',
+            description: relativeFigures[2].description,
+            imageSrc: relativeFigures[2].imageSrc,
           },
         },
         {
@@ -348,10 +351,10 @@ export function generateFullReport(formData: ReportFormData, repoInfo?: RepoInfo
             `Data entities are partitioned strictly by user ID namespaces. One user account maintains a one-to-many relationship with monitored assets, holdings, and transactions, while maintaining a one-to-one relationship with personalized configuration preferences.`,
           ],
           figure: {
-            caption: `Figure 3: Entity relationship diagram`,
+            caption: relativeFigures[3].caption,
             diagramType: 'erd',
-            description: 'One user owns many watchlist items, holdings and transactions and has exactly one set of preferences.',
-            imageSrc: './images/fig3_erd.png',
+            description: relativeFigures[3].description,
+            imageSrc: relativeFigures[3].imageSrc,
           },
         },
         {
@@ -371,10 +374,10 @@ export function generateFullReport(formData: ReportFormData, repoInfo?: RepoInfo
             `• AppShell Layout: Provides a persistent navigation sidebar, real-time status pills, active user indicators, logout triggers, and an automated scrolling market ticker.`,
           ],
           figure: {
-            caption: 'Figure 4: Sequence of adding a holding',
+            caption: relativeFigures[4].caption,
             diagramType: 'sequence',
-            description: 'The Portfolio page validates the form, saves the holding through the service layer, and records a BUY transaction. The provider emits the new list to subscribers, which refreshes the table and summary cards.',
-            imageSrc: './images/fig4_sequence.png',
+            description: relativeFigures[4].description,
+            imageSrc: relativeFigures[4].imageSrc,
           },
         },
       ],
@@ -622,20 +625,11 @@ export function subscribe<T>(
     },
   ];
 
-  const listOfFigures: ReportItemRef[] = [
-    { number: '1', title: `Layered System Architecture of ${title}`, pageNo: 9 },
-    { number: '2', title: 'Provider Selection and Fallback Resolution Flow', pageNo: 11 },
-    { number: '3', title: `Entity-Relationship Diagram for ${title}`, pageNo: 12 },
-    { number: '4', title: 'Sequence Flow of Record Mutation and Reactive Broadcast', pageNo: 14 },
-    { number: '5', title: 'Login & Authentication Screen', pageNo: 21 },
-    { number: '6', title: 'User Registration Screen', pageNo: 21 },
-    { number: '7', title: 'Main System Dashboard with Operational Cards', pageNo: 22 },
-    { number: '8', title: 'Interactive Technical Chart with Indicators', pageNo: 23 },
-    { number: '9', title: 'Active Watchlist Interface', pageNo: 23 },
-    { number: '10', title: 'Record Addition Dialog & Input Validation', pageNo: 25 },
-    { number: '11', title: 'Settings and User Customization Panel', pageNo: 26 },
-    { number: '12', title: 'Light Theme Appearance Execution', pageNo: 27 },
-  ];
+  const listOfFigures: ReportItemRef[] = Object.values(relativeFigures).map((f) => ({
+    number: String(f.id),
+    title: f.title,
+    pageNo: f.pageNo,
+  }));
 
   const listOfTables: ReportItemRef[] = [
     { number: '2.1', title: 'Technologies and Libraries Employed', pageNo: 4 },
