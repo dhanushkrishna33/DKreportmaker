@@ -1,4 +1,5 @@
 import { GeneratedReport } from '../types';
+import { COLLEGE_LOGO_BASE64 } from '../assets/reportImages';
 
 export function exportReportToWord(report: GeneratedReport) {
   const { formData, abstract, acknowledgement, declaration, certificateText, chapters, listOfFigures, listOfTables } = report;
@@ -39,28 +40,30 @@ export function exportReportToWord(report: GeneratedReport) {
 
 <!-- COVER PAGE -->
 <div class="center">
-  <br/><br/>
+  <br/>
   <h1><b>${title}</b></h1>
-  <p class="center no-indent" style="font-size: 11pt; margin-top: 24pt;">
+  <p class="center no-indent" style="font-size: 11pt; margin-top: 20pt;">
     An Industrial Internship Report submitted in partial fulfillment of the academic requirements for the award of the degree of
   </p>
-  <p class="center no-indent" style="font-size: 13pt; font-weight: bold; margin-top: 12pt;">
+  <p class="center no-indent" style="font-size: 13pt; font-weight: bold; margin-top: 10pt;">
     BACHELOR OF TECHNOLOGY<br/>IN<br/>INFORMATION TECHNOLOGY
   </p>
-  <p class="center no-indent" style="margin-top: 18pt;">
+  <p class="center no-indent" style="margin-top: 16pt;">
     <b>BY</b><br/>
     <b>${student} (${roll})</b>
   </p>
-  <p class="center no-indent" style="margin-top: 16pt;">
+  <p class="center no-indent" style="margin-top: 14pt;">
     <b>Under the Guidance of</b><br/>
     <b>${guide}</b>
   </p>
-  <br/><br/>
+  <div style="margin: 20pt 0;">
+    <img src="${COLLEGE_LOGO_BASE64}" width="140" height="140" alt="ALIET College Logo" />
+  </div>
   <p class="center no-indent" style="font-weight: bold; font-size: 12pt; line-height: 1.4;">
     DEPARTMENT OF INFORMATION TECHNOLOGY<br/>
     ANDHRA LOYOLA INSTITUTE OF ENGINEERING & TECHNOLOGY<br/>
     <span style="font-size: 10pt; font-weight: normal;">(Approved By AICTE, Affiliated to JNTUK)</span><br/>
-    <span style="font-size: 10pt; font-weight: normal;">Accredited by NAAC at "A+" and NBA (ECE, EEE, CSE, IT) | ISO 9001:2015</span><br/>
+    <span style="font-size: 10pt; font-weight: normal;">Accredited by NAAC at "A+" and NBA (ECE, EEE, CSE, IT) | An ISO 9001:2015 Certified Institution</span><br/>
     Vijayawada - 520008<br/>
     ${year}
   </p>
@@ -72,10 +75,11 @@ export function exportReportToWord(report: GeneratedReport) {
 <div class="center">
   <p class="center no-indent" style="font-size: 12pt; font-weight: bold;">
     ANDHRA LOYOLA INSTITUTE OF ENGINEERING & TECHNOLOGY<br/>
-    <span style="font-size: 9pt; font-weight: normal;">(Approved By AICTE, Affiliated to JNTUK) Accredited by NAAC at "A+" & NBA</span><br/>
-    DEPARTMENT OF INFORMATION TECHNOLOGY
+    <span style="font-size: 9.5pt; font-weight: normal;">(Approved By AICTE, Affiliated to JNTUK) Accredited by NAAC at "A+" and NBA (ECE, EEE, CSE, IT)<br/>An ISO 9001 : 2015 Certified Institution</span>
   </p>
-  <br/>
+  <div style="margin: 12pt 0;">
+    <img src="${COLLEGE_LOGO_BASE64}" width="100" height="100" alt="ALIET College Logo" />
+  </div>
   <h2 class="center"><b>CERTIFICATE</b></h2>
 </div>
 <p style="margin-top: 18pt;">${certificateText}</p>
@@ -86,6 +90,19 @@ export function exportReportToWord(report: GeneratedReport) {
     <td>EXTERNAL EXAMINER</td>
   </tr>
 </table>
+
+<div class="page-break"></div>
+
+<!-- MANDATORY INTERNSHIP CERTIFICATE PICTURE -->
+<div class="center">
+  <h2><b>INTERNSHIP CERTIFICATE</b></h2>
+  <br/>
+  ${formData.certificateImage ? `
+    <img src="${formData.certificateImage}" style="max-width: 620px; max-height: 820px;" alt="Scanned Internship Certificate" />
+  ` : `
+    <p class="center no-indent">[ Scanned internship certificate picture ]</p>
+  `}
+</div>
 
 <div class="page-break"></div>
 
@@ -150,6 +167,12 @@ ${chapters.map(c => `
       <div class="code-block">
         <b>${sub.codeListing.caption}</b><br/>
         ${sub.codeListing.code.replace(/</g, '&lt;').replace(/>/g, '&gt;')}
+      </div>
+    ` : ''}
+    ${sub.figure ? `
+      <div class="center" style="margin: 18pt 0;">
+        <p class="no-indent"><b>${sub.figure.caption}</b></p>
+        <p class="no-indent" style="font-size: 10pt; color: #555;"><i>Description: ${sub.figure.description}</i></p>
       </div>
     ` : ''}
   `).join('')}

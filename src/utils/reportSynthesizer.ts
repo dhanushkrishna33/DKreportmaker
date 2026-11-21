@@ -322,9 +322,10 @@ export function generateFullReport(formData: ReportFormData, repoInfo?: RepoInfo
             `3. Data Storage Tier: Pluggable backends satisfying the DataProvider interface. In Demo Mode, an IndexedDB key-value store manages records locally with a publish/subscribe notification bus. In Cloud Mode, remote document stores and authentication APIs take over seamlessly.`,
           ],
           figure: {
-            caption: `Figure 3.1: Layered System Architecture of ${title}`,
+            caption: `Figure 1: System architecture of InvestFlow`,
             diagramType: 'architecture',
-            description: 'Depicts Presentation Layer -> Service Layer -> DataProvider Interface -> Demo / Cloud Provider.',
+            description: 'The UI layer never touches storage directly. The service layer forwards calls to the active provider, which is either the Demo provider (IndexedDB and localStorage) or the Firebase provider (Firebase Authentication and Cloud Firestore).',
+            imageSrc: './images/fig1_architecture.png',
           },
         },
         {
@@ -334,9 +335,10 @@ export function generateFullReport(formData: ReportFormData, repoInfo?: RepoInfo
             `During application bootstrap, the provider factory inspects runtime environment variables. If cloud synchronization is requested, it dynamically imports and initializes the cloud provider. Should configuration keys be absent or network initialization fail, a warning is logged and the application smoothly falls back to the local Demo provider without crashing.`,
           ],
           figure: {
-            caption: 'Figure 3.2: Bootstrap Mode Resolution and Fallback Logic',
+            caption: 'Figure 2: Provider selection and fallback flow',
             diagramType: 'flow',
-            description: 'Flowchart tracing App Bootstrap -> Env Check -> Cloud Init vs Local Fallback -> Session Restore.',
+            description: 'The decision flow executed once when the application starts. After the provider is chosen, the saved session is restored; users with a valid session go to the Dashboard and all others to the Login page.',
+            imageSrc: './images/fig2_provider_flow.png',
           },
         },
         {
@@ -346,9 +348,10 @@ export function generateFullReport(formData: ReportFormData, repoInfo?: RepoInfo
             `Data entities are partitioned strictly by user ID namespaces. One user account maintains a one-to-many relationship with monitored assets, holdings, and transactions, while maintaining a one-to-one relationship with personalized configuration preferences.`,
           ],
           figure: {
-            caption: `Figure 3.3: Entity-Relationship Diagram for ${title}`,
+            caption: `Figure 3: Entity relationship diagram`,
             diagramType: 'erd',
-            description: 'ERD showing AppUser (1) to WatchlistItem (M), Holding (M), Transaction (M), and UserPreferences (1).',
+            description: 'One user owns many watchlist items, holdings and transactions and has exactly one set of preferences.',
+            imageSrc: './images/fig3_erd.png',
           },
         },
         {
@@ -368,9 +371,10 @@ export function generateFullReport(formData: ReportFormData, repoInfo?: RepoInfo
             `• AppShell Layout: Provides a persistent navigation sidebar, real-time status pills, active user indicators, logout triggers, and an automated scrolling market ticker.`,
           ],
           figure: {
-            caption: 'Figure 3.4: Sequence of Record Addition and Reactive Notification',
+            caption: 'Figure 4: Sequence of adding a holding',
             diagramType: 'sequence',
-            description: 'Sequence diagram illustrating Form Submission -> Validation -> Service Call -> Provider Write -> Pub/Sub Broadcast -> UI Re-render.',
+            description: 'The Portfolio page validates the form, saves the holding through the service layer, and records a BUY transaction. The provider emits the new list to subscribers, which refreshes the table and summary cards.',
+            imageSrc: './images/fig4_sequence.png',
           },
         },
       ],

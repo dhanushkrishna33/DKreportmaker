@@ -13,6 +13,7 @@ export interface ReportFormData {
   isNoLink: boolean;
   domain: string;
   projectDescription?: string;
+  certificateImage: string; // Base64 image data URL (MANDATORY)
 }
 
 export interface SubSection {
@@ -33,6 +34,7 @@ export interface SubSection {
     caption: string;
     diagramType?: 'architecture' | 'erd' | 'flow' | 'sequence';
     description: string;
+    imageSrc?: string;
   };
 }
 

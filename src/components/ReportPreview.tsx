@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { GeneratedReport } from '../types';
-import { AlietLogo } from '../assets/alietLogo';
+import { COLLEGE_LOGO_BASE64, REPORT_FIGURES } from '../assets/reportImages';
 import { exportReportToWord } from '../utils/docxExport';
-import { Printer, Download, Copy, Check, Eye, BookOpen, Layers, Award, FileCode } from 'lucide-react';
+import { Printer, Download, Copy, Check, Award, Layers } from 'lucide-react';
 
 interface ReportPreviewProps {
   report: GeneratedReport;
@@ -107,20 +107,20 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ report }) => {
       <div className="report-paper-container max-w-4xl mx-auto space-y-8 print:space-y-0 print:m-0 print:p-0 print:max-w-none">
         
         {/* =========================================================================
-            COVER PAGE
+            COVER PAGE (Exact ALIET Logo & Format)
            ========================================================================= */}
         {(activeTab === 'all' || activeTab === 'prelim') && (
           <div className="report-page bg-white text-slate-900 p-12 sm:p-16 rounded-xl shadow-2xl border border-slate-200 print:border-none print:shadow-none print:p-0 print:m-0 flex flex-col justify-between min-h-[1050px] relative">
-            <div className="text-center space-y-5">
+            <div className="text-center space-y-4">
               <h1 className="text-xl sm:text-2xl font-bold uppercase tracking-wide leading-snug font-serif text-slate-950">
                 {formData.projectName}
               </h1>
 
-              <p className="text-xs sm:text-sm text-slate-700 italic max-w-xl mx-auto font-serif">
+              <p className="text-xs sm:text-sm text-slate-700 max-w-xl mx-auto font-serif">
                 An Industrial Internship Report submitted in partial fulfillment of the academic requirements for the award of the degree of
               </p>
 
-              <div className="text-sm sm:text-base font-bold uppercase tracking-wider text-slate-900 font-serif">
+              <div className="text-sm sm:text-base font-bold uppercase tracking-wider text-slate-900 font-serif leading-tight">
                 BACHELOR OF TECHNOLOGY<br />
                 IN<br />
                 INFORMATION TECHNOLOGY
@@ -141,13 +141,17 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ report }) => {
               </div>
             </div>
 
-            {/* College Emblem */}
-            <div className="my-6 flex justify-center">
-              <AlietLogo size={140} />
+            {/* Exact College Emblem Photo */}
+            <div className="my-5 flex justify-center">
+              <img
+                src={COLLEGE_LOGO_BASE64}
+                alt="Andhra Loyola Institute of Engineering and Technology Logo"
+                className="w-36 h-36 object-contain"
+              />
             </div>
 
-            {/* Department & College Details */}
-            <div className="text-center font-serif space-y-1.5 pb-4">
+            {/* Department & College Details (Strictly Unchanged) */}
+            <div className="text-center font-serif space-y-1 pb-2">
               <p className="font-bold text-sm sm:text-base uppercase tracking-wider text-slate-950">
                 DEPARTMENT OF INFORMATION TECHNOLOGY
               </p>
@@ -157,37 +161,48 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ report }) => {
               <p className="text-[11px] text-slate-700">
                 (Approved By AICTE, Affiliated to JNTUK)
               </p>
-              <p className="text-[11px] text-slate-700">
-                Accredited by NAAC at "A+" and NBA (ECE, EEE, CSE, IT) • An ISO 9001 : 2015 Certified Institution
-              </p>
               <p className="text-xs font-semibold text-slate-800">
-                Vijayawada - 520008
+                Vijayawada-520008
               </p>
-              <p className="text-xs font-bold text-slate-900 pt-1">
+              <p className="text-xs font-bold text-slate-900">
                 {formData.academicYear || '2026-2027'}
+              </p>
+              <p className="text-[11px] text-slate-700 pt-1">
+                ANDHRA LOYOLA INSTITUTE OF ENGINEERING & TECHNOLOGY<br />
+                (Approved By AICTE, Affiliated to JNTUK) Accredited by<br />
+                NAAC at "A+" and NBA (ECE, EEE, CSE, IT)<br />
+                An ISO 9001 : 2015 Certified Institution
               </p>
             </div>
           </div>
         )}
 
         {/* =========================================================================
-            CERTIFICATE PAGE
+            CERTIFICATE PAGE (Exact ALIET Logo & Signatures)
            ========================================================================= */}
         {(activeTab === 'all' || activeTab === 'prelim') && (
           <div className="report-page bg-white text-slate-900 p-12 sm:p-16 rounded-xl shadow-2xl border border-slate-200 print:border-none print:shadow-none print:p-0 print:m-0 flex flex-col justify-between min-h-[1050px] relative page-break">
             <div>
               <div className="text-center space-y-2">
-                <p className="font-bold text-xs sm:text-sm uppercase text-slate-900 font-serif">
-                  ANDHRA LOYOLA INSTITUTE OF ENGINEERING & TECHNOLOGY
+                <p className="font-bold text-xs sm:text-sm uppercase text-slate-900 font-serif leading-tight">
+                  ANDHRA LOYOLA INSTITUTE OF ENGINEERING & TECHNOLOGY<br />
+                  <span className="text-[11px] font-normal text-slate-600">
+                    (Approved By AICTE, Affiliated to JNTUK) Accredited by<br />
+                    NAAC at "A+" and NBA (ECE, EEE, CSE, IT)<br />
+                    An ISO 9001 : 2015 Certified Institution
+                  </span>
                 </p>
-                <p className="text-[11px] text-slate-600 font-serif">
-                  (Approved By AICTE, Affiliated to JNTUK) Accredited by NAAC at "A+" and NBA (ECE, EEE, CSE, IT)<br />
-                  An ISO 9001 : 2015 Certified Institution
-                </p>
+
+                {/* College Emblem */}
                 <div className="my-3 flex justify-center">
-                  <AlietLogo size={90} />
+                  <img
+                    src={COLLEGE_LOGO_BASE64}
+                    alt="ALIET Emblem"
+                    className="w-24 h-24 object-contain"
+                  />
                 </div>
-                <h2 className="text-lg font-bold uppercase tracking-widest text-slate-950 font-serif border-b-2 border-slate-900 pb-2 inline-block">
+
+                <h2 className="text-lg font-bold uppercase tracking-widest text-slate-950 font-serif border-b-2 border-slate-900 pb-1 inline-block">
                   CERTIFICATE
                 </h2>
               </div>
@@ -223,22 +238,30 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ report }) => {
         )}
 
         {/* =========================================================================
-            INTERNSHIP CERTIFICATE PLACEHOLDER
+            INTERNSHIP CERTIFICATE PAGE (Mandatory Uploaded Picture)
            ========================================================================= */}
         {(activeTab === 'all' || activeTab === 'prelim') && (
-          <div className="report-page bg-white text-slate-900 p-12 sm:p-16 rounded-xl shadow-2xl border border-slate-200 print:border-none print:shadow-none print:p-0 print:m-0 flex flex-col justify-center items-center min-h-[1050px] relative page-break">
-            <h2 className="text-lg font-bold uppercase tracking-widest text-slate-950 font-serif mb-8">
+          <div className="report-page bg-white text-slate-900 p-8 sm:p-12 rounded-xl shadow-2xl border border-slate-200 print:border-none print:shadow-none print:p-0 print:m-0 flex flex-col justify-center items-center min-h-[1050px] relative page-break">
+            <h2 className="text-base sm:text-lg font-bold uppercase tracking-widest text-slate-950 font-serif mb-6 text-center">
               INTERNSHIP CERTIFICATE
             </h2>
-            <div className="w-full max-w-xl h-96 border-2 border-dashed border-slate-300 rounded-xl flex flex-col items-center justify-center p-8 text-center text-slate-400">
-              <Award className="w-12 h-12 text-slate-300 mb-3" />
-              <p className="font-serif text-sm font-semibold text-slate-600">
-                [ Insert the scanned internship / completion certificate here ]
-              </p>
-              <p className="text-xs text-slate-400 mt-1">
-                Attach the original organization certificate upon final binding.
-              </p>
-            </div>
+
+            {formData.certificateImage ? (
+              <div className="w-full flex-1 flex items-center justify-center p-2">
+                <img
+                  src={formData.certificateImage}
+                  alt="Scanned Internship Certificate"
+                  className="max-w-full max-h-[820px] object-contain rounded border border-slate-300 shadow-md"
+                />
+              </div>
+            ) : (
+              <div className="w-full max-w-xl h-96 border-2 border-dashed border-slate-300 rounded-xl flex flex-col items-center justify-center p-8 text-center text-slate-400">
+                <Award className="w-12 h-12 text-slate-300 mb-3" />
+                <p className="font-serif text-sm font-semibold text-slate-600">
+                  [ Scanned internship certificate picture is mandatory ]
+                </p>
+              </div>
+            )}
           </div>
         )}
 
@@ -323,7 +346,7 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ report }) => {
         )}
 
         {/* =========================================================================
-            LIST OF FIGURES & TABLES
+            LIST OF FIGURES & TABLES (Exact Matching Numbering & Titles)
            ========================================================================= */}
         {(activeTab === 'all' || activeTab === 'prelim') && (
           <div className="report-page bg-white text-slate-900 p-12 sm:p-16 rounded-xl shadow-2xl border border-slate-200 print:border-none print:shadow-none print:p-0 print:m-0 min-h-[1050px] relative page-break font-serif">
@@ -392,7 +415,7 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ report }) => {
         )}
 
         {/* =========================================================================
-            CHAPTERS 1 TO 8
+            CHAPTERS 1 TO 8 (With Exact Blueprints & Screenshots)
            ========================================================================= */}
         {(activeTab === 'all' || activeTab === 'chapters') && (
           <div className="space-y-8 print:space-y-0">
@@ -463,17 +486,114 @@ export const ReportPreview: React.FC<ReportPreviewProps> = ({ report }) => {
                         </div>
                       )}
 
-                      {/* Optional Figure Diagram */}
+                      {/* Blueprint / Architecture Diagrams and Screenshots */}
                       {sub.figure && (
                         <div className="my-6 p-4 border border-slate-200 rounded-lg bg-slate-50 flex flex-col items-center justify-center text-center">
-                          <div className="w-full max-w-md py-6 bg-white border border-slate-300 rounded shadow-sm flex flex-col items-center justify-center text-slate-600 gap-2 font-mono text-xs">
-                            <Layers className="w-8 h-8 text-blue-600" />
-                            <span className="font-bold text-slate-900 uppercase">Architecture Blueprint</span>
-                            <span className="text-[11px] text-slate-500 px-4">{sub.figure.description}</span>
-                          </div>
-                          <p className="text-xs font-bold text-slate-900 mt-2 font-serif">
+                          {sub.figure.imageSrc ? (
+                            <img
+                              src={sub.figure.imageSrc}
+                              alt={sub.figure.caption}
+                              className="max-w-full max-h-[500px] object-contain rounded border border-slate-300 shadow-sm"
+                            />
+                          ) : (
+                            <div className="w-full max-w-md py-6 bg-white border border-slate-300 rounded shadow-sm flex flex-col items-center justify-center text-slate-600 gap-2 font-mono text-xs">
+                              <Layers className="w-8 h-8 text-blue-600" />
+                              <span className="font-bold text-slate-900 uppercase">Architecture Blueprint</span>
+                              <span className="text-[11px] text-slate-500 px-4">{sub.figure.description}</span>
+                            </div>
+                          )}
+                          <p className="text-xs font-bold text-slate-900 mt-2.5 font-serif">
                             {sub.figure.caption}
                           </p>
+                          <p className="text-[11px] text-slate-600 italic font-serif mt-0.5">
+                            Description: {sub.figure.description}
+                          </p>
+                        </div>
+                      )}
+
+                      {/* In Chapter 5, render Figures 5 to 18 */}
+                      {chapter.id === 5 && sub.number === '5.1' && (
+                        <div className="space-y-6 pt-4">
+                          <div className="flex flex-col items-center">
+                            <img src={REPORT_FIGURES[5].src} alt="Figure 5" className="max-w-xl w-full rounded border border-slate-300 shadow-sm" />
+                            <p className="text-xs font-bold text-slate-900 mt-2">Figure 5: Login Page</p>
+                            <p className="text-[11px] text-slate-600 italic">Description: The login screen shows the brand, credentials form, and demo access.</p>
+                          </div>
+                          <div className="flex flex-col items-center">
+                            <img src={REPORT_FIGURES[6].src} alt="Figure 6" className="max-w-xl w-full rounded border border-slate-300 shadow-sm" />
+                            <p className="text-xs font-bold text-slate-900 mt-2">Figure 6: Signup Page</p>
+                            <p className="text-[11px] text-slate-600 italic">Description: The sign-up form collects name, email, and validated password.</p>
+                          </div>
+                          <div className="flex flex-col items-center">
+                            <img src={REPORT_FIGURES[7].src} alt="Figure 7" className="max-w-xl w-full rounded border border-slate-300 shadow-sm" />
+                            <p className="text-xs font-bold text-slate-900 mt-2">Figure 7: Dashboard</p>
+                            <p className="text-[11px] text-slate-600 italic">Description: Dashboard displays summary metrics, interactive chart, and ticker strip.</p>
+                          </div>
+                          <div className="flex flex-col items-center">
+                            <img src={REPORT_FIGURES[8].src} alt="Figure 8" className="max-w-xl w-full rounded border border-slate-300 shadow-sm" />
+                            <p className="text-xs font-bold text-slate-900 mt-2">Figure 8: Price chart with SMA, EMA and RSI</p>
+                            <p className="text-[11px] text-slate-600 italic">Description: 3M range chart with SMA, EMA overlays, and 14-period RSI sub-panel.</p>
+                          </div>
+                        </div>
+                      )}
+
+                      {chapter.id === 5 && sub.number === '5.2' && (
+                        <div className="space-y-6 pt-4">
+                          <div className="flex flex-col items-center">
+                            <img src={REPORT_FIGURES[9].src} alt="Figure 9" className="max-w-xl w-full rounded border border-slate-300 shadow-sm" />
+                            <p className="text-xs font-bold text-slate-900 mt-2">Figure 9: Watchlist</p>
+                            <p className="text-[11px] text-slate-600 italic">Description: Watchlist table displays tracked symbols and real-time performance.</p>
+                          </div>
+                          <div className="flex flex-col items-center">
+                            <img src={REPORT_FIGURES[10].src} alt="Figure 10" className="max-w-xl w-full rounded border border-slate-300 shadow-sm" />
+                            <p className="text-xs font-bold text-slate-900 mt-2">Figure 10: Adding a Symbol to the Watchlist</p>
+                            <p className="text-[11px] text-slate-600 italic">Description: Adding an asset appends the row with immediate toast feedback.</p>
+                          </div>
+                          <div className="flex flex-col items-center">
+                            <img src={REPORT_FIGURES[11].src} alt="Figure 11" className="max-w-xl w-full rounded border border-slate-300 shadow-sm" />
+                            <p className="text-xs font-bold text-slate-900 mt-2">Figure 11: Duplicate Symbol Validation</p>
+                            <p className="text-[11px] text-slate-600 italic">Description: Duplicate asset addition is safely blocked with validation messaging.</p>
+                          </div>
+                          <div className="flex flex-col items-center">
+                            <img src={REPORT_FIGURES[12].src} alt="Figure 12" className="max-w-xl w-full rounded border border-slate-300 shadow-sm" />
+                            <p className="text-xs font-bold text-slate-900 mt-2">Figure 12: Portfolio</p>
+                            <p className="text-[11px] text-slate-600 italic">Description: Portfolio table with invested cost basis, current value, and individual P/L.</p>
+                          </div>
+                          <div className="flex flex-col items-center">
+                            <img src={REPORT_FIGURES[13].src} alt="Figure 13" className="max-w-xl w-full rounded border border-slate-300 shadow-sm" />
+                            <p className="text-xs font-bold text-slate-900 mt-2">Figure 13: Add Holding Dialog</p>
+                            <p className="text-[11px] text-slate-600 italic">Description: Dialog collects asset symbol, share quantity, and purchase price.</p>
+                          </div>
+                          <div className="flex flex-col items-center">
+                            <img src={REPORT_FIGURES[14].src} alt="Figure 14" className="max-w-xl w-full rounded border border-slate-300 shadow-sm" />
+                            <p className="text-xs font-bold text-slate-900 mt-2">Figure 14: Input Validation</p>
+                            <p className="text-[11px] text-slate-600 italic">Description: Enforces non-negative inputs and prevents corrupt records.</p>
+                          </div>
+                        </div>
+                      )}
+
+                      {chapter.id === 5 && sub.number === '5.3' && (
+                        <div className="space-y-6 pt-4">
+                          <div className="flex flex-col items-center">
+                            <img src={REPORT_FIGURES[15].src} alt="Figure 15" className="max-w-xl w-full rounded border border-slate-300 shadow-sm" />
+                            <p className="text-xs font-bold text-slate-900 mt-2">Figure 15: Settings Page</p>
+                            <p className="text-[11px] text-slate-600 italic">Description: Controls for themes, chart indicators, and data mode options.</p>
+                          </div>
+                          <div className="flex flex-col items-center">
+                            <img src={REPORT_FIGURES[16].src} alt="Figure 16" className="max-w-xl w-full rounded border border-slate-300 shadow-sm" />
+                            <p className="text-xs font-bold text-slate-900 mt-2">Figure 16: Light Theme</p>
+                            <p className="text-[11px] text-slate-600 italic">Description: The application executing under the light theme palette.</p>
+                          </div>
+                          <div className="flex flex-col items-center">
+                            <img src={REPORT_FIGURES[17].src} alt="Figure 17" className="max-w-xl w-full rounded border border-slate-300 shadow-sm" />
+                            <p className="text-xs font-bold text-slate-900 mt-2">Figure 17: Reset Demo Data Confirmation</p>
+                            <p className="text-[11px] text-slate-600 italic">Description: Modal confirming restoration of the clean baseline sample dataset.</p>
+                          </div>
+                          <div className="flex flex-col items-center">
+                            <img src={REPORT_FIGURES[18].src} alt="Figure 18" className="max-w-xl w-full rounded border border-slate-300 shadow-sm" />
+                            <p className="text-xs font-bold text-slate-900 mt-2">Figure 18: Empty State for a New Account</p>
+                            <p className="text-[11px] text-slate-600 italic">Description: New user account initialized with empty state notices.</p>
+                          </div>
                         </div>
                       )}
                     </div>
